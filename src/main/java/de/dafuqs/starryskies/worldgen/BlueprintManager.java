@@ -24,7 +24,6 @@ public class BlueprintManager {
     }
 
     public void load() {
-        System.out.println("StarrySkies: BlueprintManager loading started...");
         this.data = null;
 
         // 1. Try Classpath
@@ -33,11 +32,10 @@ public class BlueprintManager {
             if (stream != null) {
                 try (java.io.InputStreamReader reader = new java.io.InputStreamReader(stream)) {
                     this.data = new Gson().fromJson(reader, BlueprintData.class);
-                    System.out.println("StarrySkies: Loaded blueprint from CLASSPATH.");
                 }
             }
         } catch (Exception e) {
-            System.err.println("StarrySkies: Failed to load from CLASSPATH: " + e.getMessage());
+            StarrySkies.LOGGER.error("Failed to load blueprint from CLASSPATH: " + e.getMessage());
         }
 
         // 2. Try Reference File (Dev Env)
@@ -46,9 +44,8 @@ public class BlueprintManager {
             if (refFile.exists()) {
                 try (java.io.FileReader reader = new java.io.FileReader(refFile)) {
                     this.data = new Gson().fromJson(reader, BlueprintData.class);
-                    System.out.println("StarrySkies: Loaded blueprint from REFERENCE FILE.");
                 } catch (Exception e) {
-                    System.err.println("StarrySkies: Failed to load from REFERENCE FILE: " + e.getMessage());
+                    StarrySkies.LOGGER.error("Failed to load blueprint from REFERENCE FILE: " + e.getMessage());
                 }
             }
         }
@@ -59,40 +56,21 @@ public class BlueprintManager {
             if (configFile.exists()) {
                 try (java.io.FileReader reader = new java.io.FileReader(configFile)) {
                     this.data = new Gson().fromJson(reader, BlueprintData.class);
-                    System.out.println("StarrySkies: Loaded blueprint from CONFIG FILE.");
                 } catch (Exception e) {
-                    System.err.println("StarrySkies: Failed to load from CONFIG FILE: " + e.getMessage());
+                    StarrySkies.LOGGER.error("Failed to load blueprint from CONFIG FILE: " + e.getMessage());
                 }
             }
         }
 
         // Finalize
         if (this.data == null || this.data.nodes == null) {
-            System.err
-                    .println("StarrySkies: CRITICAL - Failed to load blueprint from ANY source. World will be empty!");
             StarrySkies.LOGGER.error("CRITICAL: Failed to load blueprint from ANY source.");
             this.data = new BlueprintData();
             this.data.nodes = new ArrayList<>();
         } else {
             buildSpatialIndex();
-            System.out.println("StarrySkies: Blueprint loaded successfully. Nodes: " + this.data.nodes.size());
             StarrySkies.LOGGER.info("Blueprint loaded successfully. Nodes: " + this.data.nodes.size());
-            if (!this.data.nodes.isEmpty()) {
-                BlueprintNode first = this.data.nodes.get(0);
-                System.out.println("StarrySkies: Sample Node: " + first.type + " at " + Arrays.toString(first.pos));
-
-                // Self-test KDTree
-                BlueprintNode nearest = getNearestNode((int) first.pos[0], (int) first.pos[2]);
-                System.out.println(
-                        "StarrySkies: KDTree Self-Test (Target Sample): " + (nearest == first ? "SUCCESS" : "FAILURE"));
-
-                BlueprintNode origin = getNearestNode(0, 0);
-                if (origin != null) {
-                    double dist = Math.sqrt(Math.pow(origin.pos[0], 2) + Math.pow(origin.pos[2], 2));
-                    System.out.println("StarrySkies: Nearest to Origin (0,0): " + origin.type + " at "
-                            + Arrays.toString(origin.pos) + " Dist: " + dist);
-                }
-            }
+            loadBridges();
         }
     }
 
@@ -108,35 +86,14 @@ public class BlueprintManager {
         return kdTree.nearest(x, z);
     }
 
-    /**
-     * Finds spheres that might intersect with the chunk.
-     * Since chunks are small and spheres can be large, we query for nodes close to
-     * the chunk center.
-     * We'll use a generous range search or iterate if optimized.
-     * For now, naive linear scan if N is small, but N=45k.
-     * Range search on KDTree: Find nodes within (MaxSphereRadius + ChunkRadius) of
-     * ChunkCenter.
-     */
     public List<BlueprintNode> getSpheresInChunk(ChunkPos chunkPos) {
         if (kdTree == null)
             return Collections.emptyList();
 
         int chunkCenterX = chunkPos.getCenterX();
         int chunkCenterZ = chunkPos.getCenterZ();
-
-        // Approximate range: Max sphere radius + Chunk radius
-        // We iterate nearby nodes.
-        // Let's use a larger safety buffer to ensure we catch large spheres.
-        // If a sphere has radius R and is at distance D, it intersects if D < R +
-        // ChunkRadius.
-        // We search for centers within D. So searchRadius should be >=
-        // MaxPossibleSphereRadius + ChunkRadius.
-        // Assuming max sphere radius around 100-150? Let's use 300 to be safe.
         double searchRadius = 300.0;
-
-        // Better: KDTree range search
-        List<BlueprintNode> nearby = kdTree.rangeSearch(chunkCenterX, chunkCenterZ, searchRadius);
-        return nearby;
+        return kdTree.rangeSearch(chunkCenterX, chunkCenterZ, searchRadius);
     }
 
     // Data Classes
@@ -235,7 +192,7 @@ public class BlueprintManager {
 
             // Check if we need to search the other side
             double planeDistSq = diff * diff;
-            d = distSq(best.pos[0], best.pos[2], targetX, targetZ); // Re-calculate best dist
+            d = distSq(best.pos[0], best.pos[2], targetX, targetZ);
 
             if (planeDistSq < d) {
                 best = nearest(far, targetX, targetZ, best, d, depth + 1);
@@ -277,6 +234,136 @@ public class BlueprintManager {
             if (target + radius >= val) {
                 rangeSearch(node.right, x, z, radiusSq, result, depth + 1);
             }
+        }
+    }
+
+    // Bridge Support
+    private BridgeData bridgeData;
+    private Map<Long, List<Edge>> bridgeIndex;
+    private static final int BRIDGE_REGION_SIZE = 512;
+
+    private void loadBridges() {
+        this.bridgeData = null;
+
+        // 1. Try Classpath
+        try (java.io.InputStream stream = getClass()
+                .getResourceAsStream("/data/starry_skies/starry_skies/bridges_blueprint.json")) {
+            if (stream != null) {
+                try (java.io.InputStreamReader reader = new java.io.InputStreamReader(stream)) {
+                    this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
+                }
+            }
+        } catch (Exception e) {
+            StarrySkies.LOGGER.error("Failed to load bridges from CLASSPATH: " + e.getMessage());
+        }
+
+        // 2. Try Reference File
+        if (this.bridgeData == null) {
+            java.io.File refFile = new java.io.File("reference/bridges_blueprint.json");
+            if (refFile.exists()) {
+                try (java.io.FileReader reader = new java.io.FileReader(refFile)) {
+                    this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
+                } catch (Exception e) {
+                    StarrySkies.LOGGER.error("Failed to load bridges from REFERENCE FILE: " + e.getMessage());
+                }
+            }
+        }
+
+        // 3. Try Config File (Legacy / Run Dir)
+        if (this.bridgeData == null) {
+            java.io.File configFile = new java.io.File("run/config/bridges_blueprint.json");
+            if (configFile.exists()) {
+                try (java.io.FileReader reader = new java.io.FileReader(configFile)) {
+                    this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
+                } catch (Exception e) {
+                    StarrySkies.LOGGER.error("Failed to load bridges from CONFIG FILE: " + e.getMessage());
+                }
+            } else {
+                // Try simple "config/bridges_blueprint.json" in case CWD is inside run
+                java.io.File simpleConfig = new java.io.File("config/bridges_blueprint.json");
+                if (simpleConfig.exists()) {
+                    try (java.io.FileReader reader = new java.io.FileReader(simpleConfig)) {
+                        this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
+                    } catch (Exception e) {
+                        StarrySkies.LOGGER.error("Failed to load bridges from SIMPLE CONFIG FILE: " + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        if (this.bridgeData != null && this.bridgeData.edges != null) {
+            buildBridgeIndex();
+            StarrySkies.LOGGER.info("Bridge index built. Edges: " + this.bridgeData.edges.size());
+        } else {
+            StarrySkies.LOGGER.error("Failed to load any bridge data.");
+            this.bridgeData = new BridgeData();
+            this.bridgeData.edges = new ArrayList<>();
+            this.bridgeIndex = new HashMap<>(); // Empty map
+        }
+    }
+
+    private void buildBridgeIndex() {
+        this.bridgeIndex = new HashMap<>();
+        for (List<List<Integer>> rawEdge : this.bridgeData.edges) {
+            Edge edge = new Edge(rawEdge);
+            if (edge.size() < 2)
+                continue;
+            // Get bounding box of the edge
+            int minX = Math.min(edge.getStart()[0], edge.getEnd()[0]);
+            int maxX = Math.max(edge.getStart()[0], edge.getEnd()[0]);
+            int minZ = Math.min(edge.getStart()[2], edge.getEnd()[2]);
+            int maxZ = Math.max(edge.getStart()[2], edge.getEnd()[2]);
+
+            // Fix: Check floorDiv behavior for negative numbers if minX is negative
+            // Math.floorDiv accounts for negative numbers correctly (rounds towards
+            // negative infinity)
+            int minRegX = Math.floorDiv(minX, BRIDGE_REGION_SIZE);
+            int maxRegX = Math.floorDiv(maxX, BRIDGE_REGION_SIZE);
+            int minRegZ = Math.floorDiv(minZ, BRIDGE_REGION_SIZE);
+            int maxRegZ = Math.floorDiv(maxZ, BRIDGE_REGION_SIZE);
+
+            for (int rX = minRegX; rX <= maxRegX; rX++) {
+                for (int rZ = minRegZ; rZ <= maxRegZ; rZ++) {
+                    long key = ChunkPos.toLong(rX, rZ);
+                    this.bridgeIndex.computeIfAbsent(key, k -> new ArrayList<>()).add(edge);
+                }
+            }
+        }
+    }
+
+    public List<Edge> getBridgesInRegion(int blockX, int blockZ) {
+        if (bridgeIndex == null)
+            return Collections.emptyList();
+        long key = ChunkPos.toLong(Math.floorDiv(blockX, BRIDGE_REGION_SIZE),
+                Math.floorDiv(blockZ, BRIDGE_REGION_SIZE));
+        return bridgeIndex.getOrDefault(key, Collections.emptyList());
+    }
+
+    public static class BridgeData {
+        public List<List<List<Integer>>> edges;
+    }
+
+    public static class Edge {
+        private final int[] start;
+        private final int[] end;
+        private final List<List<Integer>> raw;
+
+        public Edge(List<List<Integer>> rawData) {
+            this.raw = rawData;
+            this.start = new int[] { rawData.get(0).get(0), rawData.get(0).get(1), rawData.get(0).get(2) };
+            this.end = new int[] { rawData.get(1).get(0), rawData.get(1).get(1), rawData.get(1).get(2) };
+        }
+
+        public int[] getStart() {
+            return start;
+        }
+
+        public int[] getEnd() {
+            return end;
+        }
+
+        public int size() {
+            return raw == null ? 0 : raw.size();
         }
     }
 }
