@@ -1,5 +1,6 @@
 package de.dafuqs.starryskies.registries;
 
+import de.dafuqs.starryskies.StarrySkies;
 import de.dafuqs.starryskies.worldgen.*;
 import de.dafuqs.starryskies.worldgen.dimension.*;
 import net.fabricmc.fabric.api.event.registry.*;
@@ -11,14 +12,17 @@ public class StarryRegistries {
 	public static final Registry<SphereDecorator<?>> SPHERE_DECORATOR = create(StarryRegistryKeys.SPHERE_DECORATOR);
 
 	public static void register() {
-		DynamicRegistries.register(StarryRegistryKeys.SYSTEM_GENERATOR, SystemGenerator.CODEC);
-		DynamicRegistries.register(StarryRegistryKeys.GENERATION_GROUP, GenerationGroup.CODEC);
-		DynamicRegistries.registerSynced(StarryRegistryKeys.CONFIGURED_SPHERE, ConfiguredSphere.CODEC); // Synced since it is used in the locate command
-		DynamicRegistries.registerSynced(StarryRegistryKeys.CONFIGURED_SPHERE_DECORATOR, ConfiguredSphereDecorator.CODEC);
+		DynamicRegistries.registerSynced(StarryRegistryKeys.CONFIGURED_SPHERE, ConfiguredSphere.CODEC); // Synced since
+																										// it is used in
+																										// the locate
+																										// command
+		DynamicRegistries.registerSynced(StarryRegistryKeys.CONFIGURED_SPHERE_DECORATOR,
+				ConfiguredSphereDecorator.CODEC);
+
+		Registry.register(Registries.BIOME_SOURCE, StarrySkies.id("blueprint"), BlueprintBiomeSource.CODEC);
 	}
 
 	public static <T> Registry<T> create(RegistryKey<Registry<T>> key) {
 		return FabricRegistryBuilder.createSimple(key).attribute(RegistryAttribute.MODDED).buildAndRegister();
 	}
-
 }

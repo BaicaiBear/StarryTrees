@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "starry_skies",
   "version": "${version}",
-
   "name": "Starry Skies",
   "description": "An implementation of the planetoids world gen for fabric",
   "authors": [
@@ -18,29 +17,15 @@
   "entrypoints": {
     "main": [
       "de.dafuqs.starryskies.StarrySkies"
-    ],
-    "client": [
-      "de.dafuqs.starryskies.client.StarrySkiesClient"
-    ],
-    "modmenu": [
-      "de.dafuqs.starryskies.client.ModMenuConfig"
     ]
   },
   "mixins": [
     "starry_skies.mixins.json"
   ],
-  "custom": {
-    "loom:injected_interfaces": {
-      "net/minecraft/class_761": [
-        "de/dafuqs/starryskies/client/fix/RenderSkyArgumentCapture"
-      ]
-    }
-  },
   "depends": {
     "minecraft": ">=${minecraft_version}",
     "fabricloader": "*",
-    "fabric-api": "*",
-    "cloth-config": "*"
+    "fabric-api": "*"
   },
   "suggests": {},
   "accessWidener": "starry_skies.accesswidener"

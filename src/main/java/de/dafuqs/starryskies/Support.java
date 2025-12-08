@@ -1,123 +1,13 @@
 package de.dafuqs.starryskies;
 
-import com.mojang.datafixers.util.*;
-import de.dafuqs.starryskies.worldgen.*;
-import de.dafuqs.starryskies.worldgen.dimension.*;
-import net.minecraft.registry.*;
-import net.minecraft.registry.entry.*;
-import net.minecraft.server.world.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import org.jetbrains.annotations.*;
 
-import java.awt.*;
-import java.util.List;
 import java.util.*;
-import java.util.function.*;
 
 public class Support {
-
-	private static final List<Point> AROUND_POINTS = new ArrayList<>() {{
-		add(new Point(0, 0));
-		add(new Point(1, -1));
-		add(new Point(1, 0));
-		add(new Point(1, 1));
-		add(new Point(0, -1));
-		add(new Point(0, 1));
-		add(new Point(-1, -1));
-		add(new Point(-1, 0));
-		add(new Point(-1, 1));
-	}};
-	
-	public static Optional<SphereDistance> getClosestSphere(ServerWorld world, BlockPos pos) {
-		if (!(world.getChunkManager().getChunkGenerator() instanceof StarrySkyChunkGenerator starrySkyChunkGenerator)) {
-			return Optional.empty();
-		}
-		
-		SystemGenerator systemGenerator = starrySkyChunkGenerator.getSystemGenerator();
-		if (systemGenerator != null) {
-			PlacedSphere<?> closestSphere = null;
-			double currentMinDistance = Double.MAX_VALUE;
-			
-			for (PlacedSphere<?> p : systemGenerator.getSystem(world, pos)) {
-				double currDist = pos.getSquaredDistance(p.getPosition());
-				if (currDist < currentMinDistance) {
-					currentMinDistance = currDist;
-					closestSphere = p;
-				}
-			}
-			
-			return Optional.of(new SphereDistance(closestSphere, currentMinDistance));
-		} else {
-			return Optional.empty();
-		}
-	}
-	
-	public static Optional<Pair<BlockPos, RegistryEntry<ConfiguredSphere<?, ?>>>> getClosestSphere3x3(@NotNull ServerWorld serverWorld, BlockPos position, Predicate<RegistryEntry<ConfiguredSphere<?, ?>>> predicate, DynamicRegistryManager registryManager) {
-		if (!(serverWorld.getChunkManager().getChunkGenerator() instanceof StarrySkyChunkGenerator starrySkyChunkGenerator)) {
-			return Optional.empty();
-		}
-		
-		SystemGenerator systemGenerator = starrySkyChunkGenerator.getSystemGenerator();
-		
-		PlacedSphere<?> closestSphere = null;
-		double currentMinDistance = Double.MAX_VALUE;
-		for (Point currentPoint : AROUND_POINTS) {
-			Point systemPos = getSystemCoordinateFromChunkCoordinate(position.getX() / 16, position.getZ() / 16);
-			
-			for (PlacedSphere<?> p : systemGenerator.getSystem(serverWorld, new Point(systemPos.x + currentPoint.x, systemPos.y + currentPoint.y))) {
-				if (predicate.test(p.getRegistryEntry(registryManager))) {
-					double currDist = position.getSquaredDistance(p.getPosition());
-					if (currDist < currentMinDistance) {
-						currentMinDistance = currDist;
-						closestSphere = p;
-					}
-				}
-			}
-			
-			if (closestSphere != null) {
-				return Optional.of(new Pair<>(closestSphere.getPosition(), closestSphere.getRegistryEntry(registryManager)));
-			}
-		}
-		
-		return Optional.empty();
-	}
-
-	public static <E> E getWeightedRandom(@NotNull Map<E, Float> weights, Random random) {
-		E result = null;
-		double bestValue = Double.MAX_VALUE;
-
-		for (E element : weights.keySet()) {
-			double value = -Math.log(random.nextDouble()) / (weights.get(element));
-
-			if (value < bestValue) {
-				bestValue = value;
-				result = element;
-			}
-		}
-		return result;
-	}
-
-	public static @NotNull Point getSystemCoordinateFromChunkCoordinate(int chunkX, int chunkZ) {
-		int systemSizeChunks = StarrySkies.CONFIG.systemSizeChunks;
-
-		int sysX;
-		if (chunkX >= 0) {
-			sysX = chunkX / systemSizeChunks;
-		} else {
-			sysX = (int) Math.floor(chunkX / (float) systemSizeChunks);
-		}
-
-		int sysZ;
-		if (chunkZ >= 0) {
-			sysZ = chunkZ / systemSizeChunks;
-		} else {
-			sysZ = (int) Math.floor(chunkZ / (float) systemSizeChunks);
-		}
-
-		return new Point(sysX, sysZ);
-	}
 
 	/**
 	 * Returns a random number between lowest and highest
@@ -139,7 +29,8 @@ public class Support {
 	}
 
 	public static double getDistance(@NotNull BlockPos blockPos1, @NotNull BlockPos blockpos2) {
-		return getDistance(blockPos1.getX(), blockPos1.getY(), blockPos1.getZ(), blockpos2.getX(), blockpos2.getY(), blockpos2.getZ());
+		return getDistance(blockPos1.getX(), blockPos1.getY(), blockPos1.getZ(), blockpos2.getX(), blockpos2.getY(),
+				blockpos2.getZ());
 	}
 
 	public static boolean isBlockPosInChunkPos(@NotNull ChunkPos chunkPos, @NotNull BlockPos blockPos) {
@@ -152,7 +43,8 @@ public class Support {
 	public static int getLowerGroundBlock(WorldAccess world, @NotNull BlockPos position, int minHeight) {
 		BlockPos.Mutable blockPos$Mutable = new BlockPos.Mutable(position.getX(), position.getY(), position.getZ());
 
-		//if height is an air block, move down until we reached a solid block. We are now on the surface of a piece of land
+		// if height is an air block, move down until we reached a solid block. We are
+		// now on the surface of a piece of land
 		while (blockPos$Mutable.getY() > minHeight) {
 			if (!world.isAir(blockPos$Mutable)) {
 				break;
@@ -165,7 +57,8 @@ public class Support {
 	public static int getUpperGroundBlock(WorldAccess world, @NotNull BlockPos position, int minHeight) {
 		BlockPos.Mutable blockPos$Mutable = new BlockPos.Mutable(position.getX(), position.getY(), position.getZ());
 
-		//if height is an air block, move down until we reached a solid block. We are now on the surface of a piece of land
+		// if height is an air block, move down until we reached a solid block. We are
+		// now on the surface of a piece of land
 		while (blockPos$Mutable.getY() > minHeight) {
 			if (!world.isAir(blockPos$Mutable)) {
 				return blockPos$Mutable.getY();
@@ -174,15 +67,20 @@ public class Support {
 		}
 		return -1;
 	}
-	
-	public static class SphereDistance {
-		public PlacedSphere<?> sphere;
-		public double squaredDistance;
-		
-		public SphereDistance(PlacedSphere<?> sphere, double squaredDistance) {
-			this.sphere = sphere;
-			this.squaredDistance = squaredDistance;
+
+	public static <E> E getWeightedRandom(@NotNull Map<E, Float> weights, Random random) {
+		E result = null;
+		double bestValue = Double.MAX_VALUE;
+
+		for (E element : weights.keySet()) {
+			double value = -Math.log(random.nextDouble()) / (weights.get(element));
+
+			if (value < bestValue) {
+				bestValue = value;
+				result = element;
+			}
 		}
+		return result;
 	}
-	
+
 }
