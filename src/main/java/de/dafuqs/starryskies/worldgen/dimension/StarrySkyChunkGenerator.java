@@ -52,7 +52,7 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 			StructureAccessor structureAccessor, Chunk chunk) {
 
 		// 1. Generate Bridges
-		generateBridges(chunk, chunkRegion);
+		generateBridges(chunk, chunkRegion, noiseConfig);
 
 		// 2. Generate Spheres
 		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(chunk.getPos());
@@ -93,16 +93,11 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 				if (intersects) {
 					sphere.generate(chunk, chunkRegion.getRegistryManager());
 				}
-			} else {
-				// Warning is useful but maybe too spammy if user asked to remove "all" logs.
-				// Keeping it as System.err for real errors.
-				// System.err.println(" -> WARNING: Failed to resolve sphere type: " +
-				// sphereId);
 			}
 		}
 	}
 
-	private void generateBridges(Chunk chunk, ChunkRegion chunkRegion) {
+	private void generateBridges(Chunk chunk, ChunkRegion chunkRegion, NoiseConfig noiseConfig) {
 		ChunkPos chunkPos = chunk.getPos();
 		int chunkMinX = chunkPos.getStartX();
 		int chunkMaxX = chunkPos.getEndX();
@@ -115,11 +110,8 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		if (bridges == null || bridges.isEmpty())
 			return;
 
-		BlockState slabBottom = Blocks.STONE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM);
-		BlockState slabTop = Blocks.STONE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.TOP);
-
 		// Global stiffness parameter A
-		double A_BASE = 150.0;
+		double A_BASE = 50.0;
 
 		for (BlueprintManager.Edge bridge : bridges) {
 			int[] start = bridge.getStart();
@@ -176,17 +168,158 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 					int yBlock = (int) Math.floor(yRounded);
 					boolean isTop = (yRounded - yBlock) > 0.25;
 
-					BlockState state = isTop ? slabTop : slabBottom;
+					// Get Biome-Specific Block State
+					RegistryEntry<Biome> biomeEntry = this.biomeSource.getBiome(bX >> 2, yBlock >> 2, bZ >> 2,
+							noiseConfig.getMultiNoiseSampler());
 
-					// Place center and neighbors
-					placeBridgeBlock(chunk, bX, yBlock, bZ, state);
-					placeBridgeBlock(chunk, bX + 1, yBlock, bZ, state);
-					placeBridgeBlock(chunk, bX - 1, yBlock, bZ, state);
-					placeBridgeBlock(chunk, bX, yBlock, bZ + 1, state);
-					placeBridgeBlock(chunk, bX, yBlock, bZ - 1, state);
+					// Place center and neighbors with mosaic/hole logic
+					// Center
+					Block centerBlock = getBridgeBlockState(biomeEntry, bX, yBlock, bZ);
+					if (centerBlock != null) {
+						BlockState state = centerBlock.getDefaultState().with(SlabBlock.TYPE,
+								isTop ? SlabType.TOP : SlabType.BOTTOM);
+						placeBridgeBlock(chunk, bX, yBlock, bZ, state);
+					}
+
+					// Neighbors (Cross Shape)
+					// We must query biome/palette for each neighbor to get correct mosaic effect
+					int[] dx = { 1, -1, 0, 0 };
+					int[] dz = { 0, 0, 1, -1 };
+
+					for (int n = 0; n < 4; n++) {
+						int nx = bX + dx[n];
+						int nz = bZ + dz[n];
+						// Re-query biome for strict accuracy, or just reuse center biome
+						// (faster/cleaner).
+						// Let's reuse center biome for consistency of theme, but vary coordinates for
+						// noise.
+						Block nBlock = getBridgeBlockState(biomeEntry, nx, yBlock, nz);
+						if (nBlock != null) {
+							BlockState nState = nBlock.getDefaultState().with(SlabBlock.TYPE,
+									isTop ? SlabType.TOP : SlabType.BOTTOM);
+							placeBridgeBlock(chunk, nx, yBlock, nz, nState);
+						}
+					}
+
+					// Add Snow if Cold (Randomly)
+					if (isTop && isCold(biomeEntry)) {
+						// Deterministic random check based on position to avoid chunk border artifacts
+						// Simple hash: (x ^ z ^ y) mix
+						long hash = MathHelper.hashCode(bX, yBlock, bZ);
+						if ((hash & 15) < 8) { // ~50% chance
+							BlockState snow = Blocks.SNOW.getDefaultState();
+							// Place snow above bridge components ONLY if they exist
+							if (centerBlock != null)
+								placeSnowBlock(chunk, bX, yBlock + 1, bZ, snow);
+
+							for (int m = 0; m < 4; m++) {
+								int nx = bX + dx[m];
+								int nz = bZ + dz[m];
+								// We need to check if the neighbor exists. Technically we should re-calculate
+								// the hash or check the chunk.
+								// But checking the chunk read/write might be slow or complex if not placed yet.
+								// Better: Re-run the deterministic check (fast).
+								Block nBlock = getBridgeBlockState(biomeEntry, nx, yBlock, nz);
+								if (nBlock != null) {
+									placeSnowBlock(chunk, nx, yBlock + 1, nz, snow);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
+	}
+
+	private Block getBridgeBlockState(RegistryEntry<Biome> biomeEntry, int x, int y, int z) {
+		// 1. Hole Logic (3% Global Chance)
+		long hash = MathHelper.hashCode(x, y, z);
+		if (Math.abs(hash % 100) < 3) {
+			return null; // Hole
+		}
+
+		int val = Math.abs((int) (hash % 10));
+
+		// 2. Palette Selection (9 Specific Biomes)
+		if (biomeEntry.matchesKey(BiomeKeys.WARM_OCEAN)) {
+			// Smooth Sandstone (60%), Sandstone (30%), Cut Sandstone (10%)
+			if (val < 6)
+				return Blocks.SMOOTH_SANDSTONE_SLAB;
+			if (val < 9)
+				return Blocks.SANDSTONE_SLAB;
+			return Blocks.CUT_SANDSTONE_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.FOREST)) {
+			// Oak (50%), Cobble (30%), Mossy Cobble (20%)
+			if (val < 5)
+				return Blocks.OAK_SLAB;
+			if (val < 8)
+				return Blocks.COBBLESTONE_SLAB;
+			return Blocks.MOSSY_COBBLESTONE_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.DEEP_FROZEN_OCEAN)) {
+			// Prismarine (50%), Dark Prismarine (30%), Prismarine Brick (20%)
+			if (val < 5)
+				return Blocks.PRISMARINE_SLAB;
+			if (val < 8)
+				return Blocks.DARK_PRISMARINE_SLAB;
+			return Blocks.PRISMARINE_BRICK_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.SWAMP)) {
+			// Mossy Cobble (50%), Cobble (30%), Mossy Brick (20%)
+			if (val < 5)
+				return Blocks.MOSSY_COBBLESTONE_SLAB;
+			if (val < 8)
+				return Blocks.COBBLESTONE_SLAB;
+			return Blocks.MOSSY_STONE_BRICK_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.SNOWY_TAIGA)) {
+			// Spruce (70%), Dark Oak (30%)
+			if (val < 7)
+				return Blocks.SPRUCE_SLAB;
+			return Blocks.DARK_OAK_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.LUSH_CAVES)) {
+			// Mossy Stone Brick (60%), Cobble (40%)
+			if (val < 6)
+				return Blocks.MOSSY_STONE_BRICK_SLAB;
+			return Blocks.COBBLESTONE_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.DESERT)) {
+			// Red Sandstone (60%), Sandstone (30%), Cut Red (10%)
+			if (val < 6)
+				return Blocks.RED_SANDSTONE_SLAB;
+			if (val < 9)
+				return Blocks.SANDSTONE_SLAB;
+			return Blocks.CUT_RED_SANDSTONE_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.STONY_PEAKS)) {
+			// Stone (40%), Andesite (30%), Cobble (30%)
+			if (val < 4)
+				return Blocks.STONE_SLAB;
+			if (val < 7)
+				return Blocks.ANDESITE_SLAB;
+			return Blocks.COBBLESTONE_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.FROZEN_PEAKS)) {
+			// Spruce (50%), Diorite (30%), Stone (20%)
+			if (val < 5)
+				return Blocks.SPRUCE_SLAB;
+			if (val < 8)
+				return Blocks.DIORITE_SLAB;
+			return Blocks.STONE_SLAB;
+		}
+
+		// Fallback Default: Stone (50%), Cobblestone (30%), Stone Bricks (20%)
+		if (val < 5)
+			return Blocks.STONE_SLAB;
+		if (val < 8)
+			return Blocks.COBBLESTONE_SLAB;
+		return Blocks.STONE_BRICK_SLAB;
+	}
+
+	private boolean isCold(RegistryEntry<Biome> biomeEntry) {
+		return biomeEntry.value().getTemperature() < 0.15f;
 	}
 
 	private void placeBridgeBlock(Chunk chunk, int x, int y, int z, BlockState state) {
@@ -196,6 +329,19 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 
 			BlockPos pos = new BlockPos(x, y, z);
 			chunk.setBlockState(pos, state, 0);
+		}
+	}
+
+	private void placeSnowBlock(Chunk chunk, int x, int y, int z, BlockState state) {
+		if (chunk.getPos().getStartX() <= x && chunk.getPos().getEndX() >= x &&
+				chunk.getPos().getStartZ() <= z && chunk.getPos().getEndZ() >= z &&
+				y >= chunk.getBottomY() && y < (chunk.getBottomY() + chunk.getHeight())) {
+
+			BlockPos pos = new BlockPos(x, y, z);
+			// Only place snow if air
+			if (chunk.getBlockState(pos).isAir()) {
+				chunk.setBlockState(pos, state, 0);
+			}
 		}
 	}
 
@@ -257,7 +403,16 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 				sphereId = Identifier.of(StarrySkies.MOD_ID, node.type);
 			}
 
+			// Fallback logic
 			ConfiguredSphere<?, ?> configuredSphere = sphereRegistry.get(sphereId);
+			if (configuredSphere == null && !node.type.startsWith("overworld/")) {
+				Identifier fallbackId = Identifier.of(StarrySkies.MOD_ID, "overworld/" + node.type);
+				ConfiguredSphere<?, ?> fallbackSphere = sphereRegistry.get(fallbackId);
+				if (fallbackSphere != null) {
+					configuredSphere = fallbackSphere;
+				}
+			}
+
 			if (configuredSphere != null) {
 				BlockPos pos = new BlockPos(node.getX(), node.getY(), node.getZ());
 				ChunkRandom random = new ChunkRandom(new CheckedRandom(chunkRegion.getSeed()));
@@ -268,6 +423,47 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 				sphere.setPosition(pos);
 
 				sphere.populateEntities(chunkPos, chunkRegion, chunkRandom);
+			}
+		}
+	}
+
+	@Override
+	public void generateFeatures(StructureWorldAccess world, Chunk chunk, StructureAccessor structureAccessor) {
+		super.generateFeatures(world, chunk, structureAccessor);
+
+		ChunkPos chunkPos = chunk.getPos();
+		long seed = world.getSeed();
+
+		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(chunkPos);
+		Registry<ConfiguredSphere<?, ?>> sphereRegistry = world.getRegistryManager()
+				.getOrThrow(StarryRegistryKeys.CONFIGURED_SPHERE);
+
+		for (BlueprintManager.BlueprintNode node : nodes) {
+			Identifier sphereId = Identifier.tryParse(node.type);
+			if (sphereId == null || !node.type.contains(":")) {
+				sphereId = Identifier.of(StarrySkies.MOD_ID, node.type);
+			}
+
+			// Fallback logic
+			ConfiguredSphere<?, ?> configuredSphere = sphereRegistry.get(sphereId);
+			if (configuredSphere == null && !node.type.startsWith("overworld/")) {
+				Identifier fallbackId = Identifier.of(StarrySkies.MOD_ID, "overworld/" + node.type);
+				ConfiguredSphere<?, ?> fallbackSphere = sphereRegistry.get(fallbackId);
+				if (fallbackSphere != null) {
+					configuredSphere = fallbackSphere;
+				}
+			}
+
+			if (configuredSphere != null) {
+				BlockPos pos = new BlockPos(node.getX(), node.getY(), node.getZ());
+				ChunkRandom random = new ChunkRandom(new CheckedRandom(seed));
+				random.setCarverSeed(seed, node.getX(), node.getZ());
+
+				PlacedSphere<?> sphere = configuredSphere.generate(random, world.getRegistryManager(), pos,
+						(float) node.radius);
+				sphere.setPosition(pos);
+
+				sphere.decorate(world, chunkPos.getStartPos(), random);
 			}
 		}
 	}

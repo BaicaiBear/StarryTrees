@@ -2,8 +2,14 @@ package de.dafuqs.starryskies.worldgen;
 
 import com.google.gson.*;
 import de.dafuqs.starryskies.StarrySkies;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.math.ChunkPos;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class BlueprintManager {
@@ -11,6 +17,7 @@ public class BlueprintManager {
     private static BlueprintManager INSTANCE;
     private BlueprintData data;
     private KDTree kdTree;
+    private double maxSphereRadius = 300.0; // Default fallback
 
     private BlueprintManager() {
         load();
@@ -25,59 +32,81 @@ public class BlueprintManager {
 
     public void load() {
         this.data = null;
+        Path blueprintPath = null;
+        this.maxSphereRadius = 300.0;
 
-        // 1. Try Classpath
-        try (java.io.InputStream stream = getClass()
-                .getResourceAsStream("/data/starry_skies/starry_skies/starry_skies_blueprint.json")) {
-            if (stream != null) {
-                try (java.io.InputStreamReader reader = new java.io.InputStreamReader(stream)) {
+        try {
+            Path configDir = FabricLoader.getInstance().getConfigDir();
+            blueprintPath = configDir.resolve("starry_skies_blueprint.json");
+
+            if (Files.exists(blueprintPath)) {
+                try (Reader reader = Files.newBufferedReader(blueprintPath)) {
                     this.data = new Gson().fromJson(reader, BlueprintData.class);
+                    StarrySkies.LOGGER.info("Loaded blueprint from Fabric Config: " + blueprintPath);
                 }
+            } else {
+                StarrySkies.LOGGER.warn("Blueprint config not found at " + blueprintPath + ". Generating blank file.");
+                generateBlankBlueprint(blueprintPath);
             }
         } catch (Exception e) {
-            StarrySkies.LOGGER.error("Failed to load blueprint from CLASSPATH: " + e.getMessage());
+            StarrySkies.LOGGER.error("Failed to load blueprint from Fabric Config: " + e.getMessage());
         }
 
-        // 2. Try Reference File (Dev Env)
+        // Finalize Safety Check
         if (this.data == null) {
-            java.io.File refFile = new java.io.File("reference/starry_skies_blueprint.json");
-            if (refFile.exists()) {
-                try (java.io.FileReader reader = new java.io.FileReader(refFile)) {
-                    this.data = new Gson().fromJson(reader, BlueprintData.class);
-                } catch (Exception e) {
-                    StarrySkies.LOGGER.error("Failed to load blueprint from REFERENCE FILE: " + e.getMessage());
-                }
-            }
-        }
-
-        // 3. Try Config File (Legacy)
-        if (this.data == null) {
-            java.io.File configFile = new java.io.File("run/config/starry_skies_blueprint.json");
-            if (configFile.exists()) {
-                try (java.io.FileReader reader = new java.io.FileReader(configFile)) {
-                    this.data = new Gson().fromJson(reader, BlueprintData.class);
-                } catch (Exception e) {
-                    StarrySkies.LOGGER.error("Failed to load blueprint from CONFIG FILE: " + e.getMessage());
-                }
-            }
-        }
-
-        // Finalize
-        if (this.data == null || this.data.nodes == null) {
-            StarrySkies.LOGGER.error("CRITICAL: Failed to load blueprint from ANY source.");
             this.data = new BlueprintData();
             this.data.nodes = new ArrayList<>();
-        } else {
-            buildSpatialIndex();
+            this.data.metadata = new Metadata();
+        }
+
+        if (this.data.nodes == null) {
+            this.data.nodes = new ArrayList<>();
+        }
+
+        // Scan for max radius
+        if (!this.data.nodes.isEmpty()) {
+            double maxR = 0;
+            for (BlueprintNode node : this.data.nodes) {
+                if (node.radius > maxR) {
+                    maxR = node.radius;
+                }
+            }
+            this.maxSphereRadius = maxR + 50.0; // Add padding for chunks
+            StarrySkies.LOGGER.info("Blueprint scanning: Max Sphere Radius found = " + maxR
+                    + ". Setting Search Radius to " + this.maxSphereRadius);
+        }
+
+        buildSpatialIndex();
+        if (!this.data.nodes.isEmpty()) {
             StarrySkies.LOGGER.info("Blueprint loaded successfully. Nodes: " + this.data.nodes.size());
-            loadBridges();
+        }
+
+        loadBridges();
+    }
+
+    private void generateBlankBlueprint(Path path) {
+        this.data = new BlueprintData();
+        this.data.nodes = new ArrayList<>();
+        this.data.metadata = new Metadata();
+        this.data.metadata.seed = 0;
+        this.data.metadata.num_nodes = 0;
+        this.data.metadata.radius_map = 0;
+
+        try (Writer writer = Files.newBufferedWriter(path)) {
+            new GsonBuilder().setPrettyPrinting().create().toJson(this.data, writer);
+        } catch (IOException e) {
+            StarrySkies.LOGGER.error("Failed to generate blank blueprint file: " + e.getMessage());
         }
     }
 
     private void buildSpatialIndex() {
         // Build 2D KD-Tree on X, Z
-        List<BlueprintNode> nodes = new ArrayList<>(this.data.nodes);
-        this.kdTree = new KDTree(nodes);
+        if (this.data.nodes != null && !this.data.nodes.isEmpty()) {
+            List<BlueprintNode> nodes = new ArrayList<>(this.data.nodes);
+            this.kdTree = new KDTree(nodes);
+        } else {
+            this.kdTree = new KDTree(Collections.emptyList());
+        }
     }
 
     public BlueprintNode getNearestNode(int x, int z) {
@@ -92,8 +121,8 @@ public class BlueprintManager {
 
         int chunkCenterX = chunkPos.getCenterX();
         int chunkCenterZ = chunkPos.getCenterZ();
-        double searchRadius = 300.0;
-        return kdTree.rangeSearch(chunkCenterX, chunkCenterZ, searchRadius);
+        // Use dynamically calculated max radius
+        return kdTree.rangeSearch(chunkCenterX, chunkCenterZ, this.maxSphereRadius);
     }
 
     // Data Classes
@@ -244,61 +273,52 @@ public class BlueprintManager {
 
     private void loadBridges() {
         this.bridgeData = null;
+        Path bridgePath = null;
 
-        // 1. Try Classpath
-        try (java.io.InputStream stream = getClass()
-                .getResourceAsStream("/data/starry_skies/starry_skies/bridges_blueprint.json")) {
-            if (stream != null) {
-                try (java.io.InputStreamReader reader = new java.io.InputStreamReader(stream)) {
-                    this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
-                }
-            }
-        } catch (Exception e) {
-            StarrySkies.LOGGER.error("Failed to load bridges from CLASSPATH: " + e.getMessage());
-        }
+        // 1. Try Config File (Fabric Recommended)
+        try {
+            Path configDir = FabricLoader.getInstance().getConfigDir();
+            bridgePath = configDir.resolve("bridges_blueprint.json");
 
-        // 2. Try Reference File
-        if (this.bridgeData == null) {
-            java.io.File refFile = new java.io.File("reference/bridges_blueprint.json");
-            if (refFile.exists()) {
-                try (java.io.FileReader reader = new java.io.FileReader(refFile)) {
+            if (Files.exists(bridgePath)) {
+                try (Reader reader = Files.newBufferedReader(bridgePath)) {
                     this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
-                } catch (Exception e) {
-                    StarrySkies.LOGGER.error("Failed to load bridges from REFERENCE FILE: " + e.getMessage());
-                }
-            }
-        }
-
-        // 3. Try Config File (Legacy / Run Dir)
-        if (this.bridgeData == null) {
-            java.io.File configFile = new java.io.File("run/config/bridges_blueprint.json");
-            if (configFile.exists()) {
-                try (java.io.FileReader reader = new java.io.FileReader(configFile)) {
-                    this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
-                } catch (Exception e) {
-                    StarrySkies.LOGGER.error("Failed to load bridges from CONFIG FILE: " + e.getMessage());
+                    StarrySkies.LOGGER.info("Loaded bridges from Fabric Config: " + bridgePath);
                 }
             } else {
-                // Try simple "config/bridges_blueprint.json" in case CWD is inside run
-                java.io.File simpleConfig = new java.io.File("config/bridges_blueprint.json");
-                if (simpleConfig.exists()) {
-                    try (java.io.FileReader reader = new java.io.FileReader(simpleConfig)) {
-                        this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
-                    } catch (Exception e) {
-                        StarrySkies.LOGGER.error("Failed to load bridges from SIMPLE CONFIG FILE: " + e.getMessage());
-                    }
-                }
+                StarrySkies.LOGGER.warn("Bridge config not found at " + bridgePath + ". Generating blank file.");
+                generateBlankBridges(bridgePath);
             }
+        } catch (Exception e) {
+            StarrySkies.LOGGER.error("Failed to load bridges from Fabric Config: " + e.getMessage());
         }
 
-        if (this.bridgeData != null && this.bridgeData.edges != null) {
+        // Finalize Safety Check
+        if (this.bridgeData == null) {
+            this.bridgeData = new BridgeData();
+            this.bridgeData.edges = new ArrayList<>();
+        }
+        if (this.bridgeData.edges == null) {
+            this.bridgeData.edges = new ArrayList<>();
+        }
+
+        if (!this.bridgeData.edges.isEmpty()) {
             buildBridgeIndex();
             StarrySkies.LOGGER.info("Bridge index built. Edges: " + this.bridgeData.edges.size());
         } else {
-            StarrySkies.LOGGER.error("Failed to load any bridge data.");
-            this.bridgeData = new BridgeData();
-            this.bridgeData.edges = new ArrayList<>();
+            StarrySkies.LOGGER.info("Bridge data is empty (no edges). Skipping index build.");
             this.bridgeIndex = new HashMap<>(); // Empty map
+        }
+    }
+
+    private void generateBlankBridges(Path path) {
+        this.bridgeData = new BridgeData();
+        this.bridgeData.edges = new ArrayList<>();
+
+        try (Writer writer = Files.newBufferedWriter(path)) {
+            new GsonBuilder().setPrettyPrinting().create().toJson(this.bridgeData, writer);
+        } catch (IOException e) {
+            StarrySkies.LOGGER.error("Failed to generate blank bridge file: " + e.getMessage());
         }
     }
 

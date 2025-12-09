@@ -26,19 +26,21 @@ public abstract class PlacedSphere<SC extends SphereConfig> {
 
 	protected BlockPos position;
 	protected ChunkRandom random;
-	
-	public PlacedSphere(ConfiguredSphere<? extends Sphere<SC>, SC> configuredSphere, float radius, List<RegistryEntry<ConfiguredSphereDecorator<?, ?>>> decorators, List<Pair<EntityType<?>, Integer>> spawns, ChunkRandom random) {
+
+	public PlacedSphere(ConfiguredSphere<? extends Sphere<SC>, SC> configuredSphere, float radius,
+			List<RegistryEntry<ConfiguredSphereDecorator<?, ?>>> decorators, List<Pair<EntityType<?>, Integer>> spawns,
+			ChunkRandom random) {
 		this.configuredSphere = configuredSphere;
 		this.radius = radius;
 		this.decorators = decorators;
 		this.spawns = spawns;
 		this.random = random;
 	}
-	
+
 	public Optional<RegistryKey<ConfiguredSphere<?, ?>>> getRegistryKey(DynamicRegistryManager registryManager) {
 		return registryManager.getOrThrow(StarryRegistryKeys.CONFIGURED_SPHERE).getKey(this.configuredSphere);
 	}
-	
+
 	public RegistryEntry<ConfiguredSphere<?, ?>> getRegistryEntry(DynamicRegistryManager registryManager) {
 		return registryManager.getOrThrow(StarryRegistryKeys.CONFIGURED_SPHERE).getEntry(this.configuredSphere);
 	}
@@ -70,22 +72,23 @@ public abstract class PlacedSphere<SC extends SphereConfig> {
 		int xMax = this.position.getX() + radius + 15;
 		int zMin = this.position.getZ() - radius - 16;
 		int zMax = this.position.getZ() + radius + 15;
-		return (chunkPos.getStartX() >= xMin && chunkPos.getEndX() <= xMax) && (chunkPos.getStartZ() >= zMin && chunkPos.getEndZ() <= zMax);
+		return (chunkPos.getStartX() >= xMin && chunkPos.getEndX() <= xMax)
+				&& (chunkPos.getStartZ() >= zMin && chunkPos.getEndZ() <= zMax);
 	}
-	
+
 	public Stream<ChunkPos> streamChunksWithSphere() {
 		return ChunkPos.stream(
-				new ChunkPos(ChunkSectionPos.getSectionCoord(position.getX() - this.getRadius()), ChunkSectionPos.getSectionCoord(position.getZ() - this.getRadius())),
-				new ChunkPos(ChunkSectionPos.getSectionCoord(position.getX() + this.getRadius()), ChunkSectionPos.getSectionCoord(position.getZ() + this.getRadius()))
-		);
+				new ChunkPos(ChunkSectionPos.getSectionCoord(position.getX() - this.getRadius()),
+						ChunkSectionPos.getSectionCoord(position.getZ() - this.getRadius())),
+				new ChunkPos(ChunkSectionPos.getSectionCoord(position.getX() + this.getRadius()),
+						ChunkSectionPos.getSectionCoord(position.getZ() + this.getRadius())));
 	}
-	
+
 	public Stream<BlockPos> streamBlockPosesOfSpheres() {
 		int r = (int) Math.ceil(radius);
 		return BlockPos.stream(
 				position.getX() - r, position.getY() - r, position.getZ() - r,
-				position.getX() + r, position.getY() + r, position.getZ() + r
-		);
+				position.getX() + r, position.getY() + r, position.getZ() + r);
 	}
 
 	public boolean isCenterInChunk(@NotNull ChunkPos chunkPos) {
@@ -108,28 +111,32 @@ public abstract class PlacedSphere<SC extends SphereConfig> {
 			}
 		}
 	}
-	
+
 	protected boolean isTopBlock(long distanceFromSphereCenter, double x, double y, double z) {
 		if (distanceFromSphereCenter > this.radius - 1) {
-			long dist2 = Math.round(Support.getDistance(this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ(), x, y + 1, z));
+			long dist2 = Math.round(Support.getDistance(this.getPosition().getX(), this.getPosition().getY(),
+					this.getPosition().getZ(), x, y + 1, z));
 			return dist2 > this.radius;
 		} else {
 			return false;
 		}
 	}
-	
+
 	protected boolean isBottomBlock(long distanceFromSphereCenter, double x, double y, double z) {
 		if (distanceFromSphereCenter > this.radius - 1) {
-			long dist2 = Math.round(Support.getDistance(this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ(), x, y - 1, z));
+			long dist2 = Math.round(Support.getDistance(this.getPosition().getX(), this.getPosition().getY(),
+					this.getPosition().getZ(), x, y - 1, z));
 			return dist2 > this.radius;
 		} else {
 			return false;
 		}
 	}
-	
+
 	public void populateEntities(ChunkPos chunkPos, StructureWorldAccess chunkRegion, ChunkRandom chunkRandom) {
 		if (isCenterInChunk(chunkPos)) {
-			StarrySkies.LOGGER.debug("Populating entities for sphere in chunk x:{} z:{} (StartX:{} StartZ:{}) {}", chunkPos.x, chunkPos.z, chunkPos.getStartX(), chunkPos.getStartZ(), this.getDescription(chunkRegion.getRegistryManager()));
+			StarrySkies.LOGGER.debug("Populating entities for sphere in chunk x:{} z:{} (StartX:{} StartZ:{}) {}",
+					chunkPos.x, chunkPos.z, chunkPos.getStartX(), chunkPos.getStartZ(),
+					this.getDescription(chunkRegion.getRegistryManager()));
 			for (Pair<EntityType<?>, Integer> spawnEntry : spawns) {
 
 				int xCord = chunkPos.getStartX();
@@ -146,17 +153,24 @@ public abstract class PlacedSphere<SC extends SphereConfig> {
 					int height = Support.getLowerGroundBlock(chunkRegion, blockPos, minHeight) + 1;
 
 					if (height != 0) {
-						Entity entity = spawnEntry.getLeft().create(chunkRegion.toServerWorld(), SpawnReason.CHUNK_GENERATION);
+						Entity entity = spawnEntry.getLeft().create(chunkRegion.toServerWorld(),
+								SpawnReason.CHUNK_GENERATION);
 						if (entity != null) {
 							float width = entity.getWidth();
-							double xPos = MathHelper.clamp(startingX, (double) xCord + (double) width, (double) xCord + 16.0D - (double) width);
-							double zLength = MathHelper.clamp(startingZ, (double) zCord + (double) width, (double) zCord + 16.0D - (double) width);
+							double xPos = MathHelper.clamp(startingX, (double) xCord + (double) width,
+									(double) xCord + 16.0D - (double) width);
+							double zLength = MathHelper.clamp(startingZ, (double) zCord + (double) width,
+									(double) zCord + 16.0D - (double) width);
 
 							try {
-								entity.refreshPositionAndAngles(xPos, height, zLength, chunkRandom.nextFloat() * 360.0F, 0.0F);
+								entity.refreshPositionAndAngles(xPos, height, zLength, chunkRandom.nextFloat() * 360.0F,
+										0.0F);
 								if (entity instanceof MobEntity mobentity) {
-									if (mobentity.canSpawn(chunkRegion, SpawnReason.CHUNK_GENERATION) && mobentity.canSpawn(chunkRegion)) {
-										mobentity.initialize(chunkRegion, chunkRegion.getLocalDifficulty(mobentity.getBlockPos()), SpawnReason.CHUNK_GENERATION, null);
+									if (mobentity.canSpawn(chunkRegion, SpawnReason.CHUNK_GENERATION)
+											&& mobentity.canSpawn(chunkRegion)) {
+										mobentity.initialize(chunkRegion,
+												chunkRegion.getLocalDifficulty(mobentity.getBlockPos()),
+												SpawnReason.CHUNK_GENERATION, null);
 										boolean success = chunkRegion.spawnEntity(mobentity);
 										if (!success) {
 											return;
@@ -164,7 +178,8 @@ public abstract class PlacedSphere<SC extends SphereConfig> {
 									}
 								}
 							} catch (Exception exception) {
-								StarrySkies.LOGGER.warn("Failed to spawn mob on sphere{}\nException: {}", this.getDescription(chunkRegion.getRegistryManager()), exception);
+								StarrySkies.LOGGER.warn("Failed to spawn mob on sphere{}\nException: {}",
+										this.getDescription(chunkRegion.getRegistryManager()), exception);
 							}
 						}
 					}

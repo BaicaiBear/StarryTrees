@@ -38,10 +38,6 @@ public class BlueprintBiomeSource extends BiomeSource {
         return Stream.of(this.biomeRegistry.getOrThrow(BiomeKeys.PLAINS));
     }
 
-    private static final java.util.Map<String, String> BIOME_REMAPS = java.util.Map.of(
-            "swampland", "swamp",
-            "cold_taiga", "snowy_taiga");
-
     @Override
     public RegistryEntry<Biome> getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noise) {
         // BiomeSource receives generic coordinates (Quartiles usually).
@@ -55,11 +51,6 @@ public class BlueprintBiomeSource extends BiomeSource {
         if (node != null) {
             String biomeIdStr = node.biome;
 
-            // Handle legacy/mismatched biome names from blueprint
-            if (BIOME_REMAPS.containsKey(biomeIdStr)) {
-                biomeIdStr = BIOME_REMAPS.get(biomeIdStr);
-            }
-
             Identifier biomeId = Identifier.tryParse(biomeIdStr);
             if (biomeId == null) {
                 // Fallback or try appending minecraft namespace
@@ -71,7 +62,7 @@ public class BlueprintBiomeSource extends BiomeSource {
                     && (blockX + blockZ) % 20 == 0) {
                 System.out.println("BlueprintBiomeSource: At Block " + blockX + "," + blockZ + " (Quartile " + x + ","
                         + z + ") nearest node is " + node.type
-                        + " (Biome: " + node.biome + " mapped to " + biomeIdStr + ") -> Resolved: " + biomeId);
+                        + " (Biome: " + node.biome + ") -> Resolved: " + biomeId);
             }
 
             if (this.biomeRegistry.getOptional(RegistryKey.of(RegistryKeys.BIOME, biomeId)).isPresent()) {
