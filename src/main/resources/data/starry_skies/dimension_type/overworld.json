@@ -1,7 +1,7 @@
 {
   "logical_height": 384,
   "infiniburn": "#minecraft:infiniburn_overworld",
-  "effects": "starry_skies:overworld",
+  "effects": "minecraft:overworld",
   "ambient_light": 0.1,
   "bed_works": true,
   "respawn_anchor_works": false,
