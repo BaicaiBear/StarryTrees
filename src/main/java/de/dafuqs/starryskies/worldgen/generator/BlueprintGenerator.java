@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects; // Added
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors; // Added
+import java.util.stream.IntStream; // Added
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -53,22 +56,14 @@ public class BlueprintGenerator {
         List<MathUtils.Triangle> triangles = MathUtils.triangulate(points, -radius, -radius, radius, radius);
         Map<Integer, List<Integer>> adj = buildAdjacency(points, triangles);
 
-        // 3. Rivers & Roots
-        RiverResult riverResult = processRivers(points, adj, triangles, numRoots, random);
+        // 3. Rivers, Forest, Heights (Optimized Parallel Voronoi)
+        PartitionResult result = partitionAndGenerate(points, adj, numRoots, random, isNether);
 
-        // 4. Forest Growth (BFS)
-        ForestResult forestResult = buildForest(points, adj, riverResult.roots, riverResult.treeIds,
-                riverResult.removed, random);
+        // 4. Biomes (Noise) - on valid IDs only
+        int[] biomes = assignBiomes(points, result.heights, result.validIds, seed, isNether);
 
-        // 5. Heights
-        double[] heights = calcHeights(points, riverResult.roots, forestResult.parent, forestResult.validIds, random,
-                isNether);
-
-        // 6. Biomes (Noise)
-        int[] biomes = assignBiomes(points, heights, forestResult.validIds, seed, isNether);
-
-        // 7. Sphere Assignment & Bridges
-        return createBlueprints(points, heights, biomes, forestResult.validIds, forestResult.edges, isNether, random);
+        // 5. Sphere Assignment & Bridges
+        return createBlueprints(points, result.heights, biomes, result.validIds, result.edges, isNether, random);
     }
 
     private static List<MathUtils.Point> poissonSampling(double radius, double minDist, int n, ChunkRandom random) {
@@ -175,13 +170,22 @@ public class BlueprintGenerator {
         }
     }
 
-    private static RiverResult processRivers(List<MathUtils.Point> points, Map<Integer, List<Integer>> adj,
-            List<MathUtils.Triangle> triangles, int numRoots, ChunkRandom random) {
-        // 1. Pick Centroids (K-Means++)
-        List<MathUtils.Point> centroids = new ArrayList<>();
-        // Pick random first center
-        centroids.add(points.get(random.nextInt(points.size())));
+    // Data structure to hold per-cluster results
+    private static class ClusterResult {
+        int clusterId;
+        List<int[]> edges = new ArrayList<>();
+        Set<Integer> validIds = new HashSet<>();
+        Map<Integer, Double> localHeights = new HashMap<>(); // ID -> Height
+    }
 
+    private static PartitionResult partitionAndGenerate(List<MathUtils.Point> points,
+            Map<Integer, List<Integer>> adj, int numRoots, ChunkRandom random, boolean isNether) {
+
+        // 1. Pick Centroids (Initialize K-Means)
+        List<MathUtils.Point> centroids = new ArrayList<>();
+        centroids.add(points.get(random.nextInt(points.size()))); // First random
+
+        // K-Means++ Initialization
         for (int k = 1; k < numRoots; k++) {
             double[] minDistSq = new double[points.size()];
             Arrays.fill(minDistSq, Double.MAX_VALUE);
@@ -208,12 +212,12 @@ public class BlueprintGenerator {
             }
         }
 
-        // Relax centroids (Lloyd's algorithm - simplified 5 iters)
-        for (int iter = 0; iter < 5; iter++) {
+        // 2. Relax Centroids (Lloyd's Algorithm - 1 Iteration per user request)
+        for (int iter = 0; iter < 1; iter++) {
             MathUtils.Point[] newCentroids = new MathUtils.Point[numRoots];
             int[] counts = new int[numRoots];
             for (int k = 0; k < numRoots; k++)
-                newCentroids[k] = new MathUtils.Point(0, 0); // Accumulator
+                newCentroids[k] = new MathUtils.Point(0, 0);
 
             for (MathUtils.Point p : points) {
                 int nearest = 0;
@@ -229,194 +233,207 @@ public class BlueprintGenerator {
                         newCentroids[nearest].z() + p.z());
                 counts[nearest]++;
             }
-
             for (int k = 0; k < numRoots; k++) {
                 if (counts[k] > 0) {
                     centroids.set(k,
                             new MathUtils.Point(newCentroids[k].x() / counts[k], newCentroids[k].z() / counts[k]));
                 } else {
-                    centroids.set(k, points.get(random.nextInt(points.size()))); // Respawn if empty
+                    centroids.set(k, points.get(random.nextInt(points.size())));
                 }
             }
         }
 
-        // Find actual root nodes closest to centroids
-        List<Integer> roots = new ArrayList<>();
-        for (MathUtils.Point c : centroids) {
-            int nearest = -1;
-            double minD = Double.MAX_VALUE;
-            for (int i = 0; i < points.size(); i++) {
-                double d = distSq(points.get(i), c);
-                if (d < minD) {
-                    minD = d;
-                    nearest = i;
+        final List<MathUtils.Point> finalCentroids = new ArrayList<>(centroids);
+
+        // 3. Partition Points (Global Voronoi Assignment) with Domain Warping
+        // We use an array of lists to bucket points into clusters
+        List<List<Integer>> clusters = new ArrayList<>();
+        for (int k = 0; k < numRoots; k++)
+            clusters.add(new ArrayList<>());
+
+        double riverWidth = 300.0;
+        double spawnProtectionSq = 300.0 * 300.0;
+
+        // Domain Warping Parameters
+        SimplexNoise warpNoiseX = new SimplexNoise(random.nextLong());
+        SimplexNoise warpNoiseZ = new SimplexNoise(random.nextLong());
+        double warpScale = isNether ? 0.002 : 0.001; // Lower frequency = Smoother curves
+        double warpAmp = isNether ? 200.0 : 400.0; // Lower amplitude = Less chaotic distortion
+
+        for (int i = 0; i < points.size(); i++) {
+            MathUtils.Point p = points.get(i);
+
+            // Apply Domain Warping for distance check
+            // Used 1 octave for maximum smoothness (no jagged fractal details)
+            double wx = fractalNoise(warpNoiseX, p.x() * warpScale, p.z() * warpScale, 1) * warpAmp;
+            double wz = fractalNoise(warpNoiseZ, p.x() * warpScale, p.z() * warpScale, 1) * warpAmp;
+            MathUtils.Point warpedP = new MathUtils.Point(p.x() + wx, p.z() + wz);
+
+            double d1 = Double.MAX_VALUE;
+            double d2 = Double.MAX_VALUE;
+            int c1 = -1;
+
+            for (int k = 0; k < numRoots; k++) {
+                double d = dist(warpedP, finalCentroids.get(k));
+                if (d < d1) {
+                    d2 = d1;
+                    d1 = d;
+                    c1 = k;
+                } else if (d < d2) {
+                    d2 = d;
                 }
             }
-            roots.add(nearest);
+
+            // River Check (using warped distances creates wavy rivers)
+            boolean isSpawnProtected = (p.x() * p.x() + p.z() * p.z() < spawnProtectionSq);
+            if (!isSpawnProtected && (d2 - d1) < riverWidth) {
+                continue; // Is River
+            }
+
+            clusters.get(c1).add(i);
         }
 
-        // Multi-Source Prim's
-        int[] treeIds = new int[points.size()];
-        Arrays.fill(treeIds, -1);
+        // 4. Sequential Generation (User preference: avoid parallel overhead)
+        List<ClusterResult> results = IntStream.range(0, numRoots)
+                .mapToObj(clusterId -> {
+                    List<Integer> clusterPoints = clusters.get(clusterId);
+                    if (clusterPoints.isEmpty())
+                        return null;
+
+                    // Create local random derived from main seed + cluster ID to be deterministic
+                    // but distinct
+                    ChunkRandom localRandom = new ChunkRandom(new CheckedRandom(random.nextLong() ^ clusterId));
+
+                    return generateCluster(clusterId, clusterPoints, points, adj, finalCentroids.get(clusterId),
+                            localRandom, isNether);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        // 5. Merge
+        Set<Integer> allValidIds = new HashSet<>();
+        List<int[]> allEdges = new ArrayList<>();
+        double[] heights = new double[points.size()];
+        Arrays.fill(heights, isNether ? 40 : -32); // Default base height
+
+        for (ClusterResult res : results) {
+            allValidIds.addAll(res.validIds);
+            allEdges.addAll(res.edges);
+            for (var entry : res.localHeights.entrySet()) {
+                heights[entry.getKey()] = entry.getValue();
+            }
+        }
+
+        return new PartitionResult(allValidIds, allEdges, heights);
+    }
+
+    private static ClusterResult generateCluster(int clusterId, List<Integer> clusterPoints,
+            List<MathUtils.Point> allPoints,
+            Map<Integer, List<Integer>> adj, MathUtils.Point centroid, ChunkRandom random, boolean isNether) {
+
+        ClusterResult res = new ClusterResult();
+        res.clusterId = clusterId;
+        Set<Integer> pointSet = new HashSet<>(clusterPoints);
+
+        // Find local root (closest to centroid within the cluster)
+        int root = -1;
+        double minD = Double.MAX_VALUE;
+        for (int pIdx : clusterPoints) {
+            double d = distSq(allPoints.get(pIdx), centroid);
+            if (d < minD) {
+                minD = d;
+                root = pIdx;
+            }
+        }
+
+        if (root == -1)
+            return null; // Should not happen
+
+        // Local Prim's Algorithm
+        // Restrict edges to only those connecting two points BOTH inside this cluster
         PriorityQueue<Edge> pq = new PriorityQueue<>();
+        res.validIds.add(root);
 
-        for (int r : roots) {
-            treeIds[r] = r;
-            for (int v : adj.getOrDefault(r, Collections.emptyList())) {
-                pq.add(new Edge(dist(points.get(r), points.get(v)), r, v));
+        Map<Integer, Integer> parent = new HashMap<>(); // For height calculation tree
+        parent.put(root, null);
+
+        // Initial edges from root
+        for (int neighbor : adj.getOrDefault(root, Collections.emptyList())) {
+            if (pointSet.contains(neighbor)) {
+                pq.add(new Edge(dist(allPoints.get(root), allPoints.get(neighbor)), root, neighbor));
             }
         }
 
         while (!pq.isEmpty()) {
             Edge e = pq.poll();
-            if (treeIds[e.v] == -1) {
-                treeIds[e.v] = treeIds[e.u]; // Propagate ID
+            if (!res.validIds.contains(e.v)) {
+                res.validIds.add(e.v);
+                res.edges.add(new int[] { e.u, e.v });
+                parent.put(e.v, e.u);
+
                 for (int n : adj.getOrDefault(e.v, Collections.emptyList())) {
-                    if (treeIds[n] == -1) {
-                        pq.add(new Edge(dist(points.get(e.v), points.get(n)), e.v, n));
+                    if (pointSet.contains(n) && !res.validIds.contains(n)) {
+                        pq.add(new Edge(dist(allPoints.get(e.v), allPoints.get(n)), e.v, n));
                     }
                 }
             }
         }
 
-        // Identify Boundaries (Rivers)
-        Set<String> boundaries = new HashSet<>();
-        for (int u = 0; u < points.size(); u++) {
-            for (int v : adj.getOrDefault(u, Collections.emptyList())) {
-                if (treeIds[u] != -1 && treeIds[v] != -1 && treeIds[u] != treeIds[v]) {
-                    int min = Math.min(u, v), max = Math.max(u, v);
-                    boundaries.add(min + "-" + max);
-                }
-            }
+        // Local Heights Calculation
+        double HEIGHT_MIN = isNether ? 40 : -32;
+        double HEIGHT_MAX = isNether ? 88 : 310;
+        double ROOT_H_MIN = isNether ? 30 : 63;
+        double ROOT_H_MAX = isNether ? 100 : 196;
+        double SLOPE_MIN = -0.125;
+        double SLOPE_MAX = 0.125;
+
+        Stack<Integer> stack = new Stack<>();
+        stack.push(root);
+        res.localHeights.put(root, ROOT_H_MIN + random.nextDouble() * (ROOT_H_MAX - ROOT_H_MIN));
+
+        // Inverse parent map for BFS height propagation
+        Map<Integer, List<Integer>> children = new HashMap<>();
+        for (int p : res.validIds)
+            children.put(p, new ArrayList<>());
+        for (var entry : parent.entrySet()) {
+            if (entry.getValue() != null)
+                children.get(entry.getValue()).add(entry.getKey());
         }
 
-        Set<Integer> removed = new HashSet<>();
-        // Optimize: Use Spatial Grid for River Width Check
-        // Grid size = river width (200)
-        double riverWidth = 200.0;
-        double riverWidthSq = riverWidth * riverWidth;
-        Map<Long, List<MathUtils.Point>> boundaryGrid = new HashMap<>();
-        double cellSize = riverWidth;
+        while (!stack.isEmpty()) {
+            int u = stack.pop();
+            double hU = res.localHeights.get(u);
 
-        for (String key : boundaries) {
-            String[] parts = key.split("-");
-            int u = Integer.parseInt(parts[0]);
-            int v = Integer.parseInt(parts[1]);
-            MathUtils.Point p1 = points.get(u);
-            MathUtils.Point p2 = points.get(v);
-            MathUtils.Point mid = new MathUtils.Point((p1.x() + p2.x()) / 2, (p1.z() + p2.z()) / 2);
-
-            int gx = (int) Math.floor(mid.x() / cellSize);
-            int gz = (int) Math.floor(mid.z() / cellSize);
-            long bk = asLong(gx, gz);
-            boundaryGrid.computeIfAbsent(bk, k -> new ArrayList<>()).add(mid);
-        }
-
-        for (int i = 0; i < points.size(); i++) {
-            MathUtils.Point p = points.get(i);
-            int gx = (int) Math.floor(p.x() / cellSize);
-            int gz = (int) Math.floor(p.z() / cellSize);
-
-            boolean isRemoved = false;
-            // Check 3x3 neighbor grids
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    long bk = asLong(gx + dx, gz + dz);
-                    if (boundaryGrid.containsKey(bk)) {
-                        for (MathUtils.Point b : boundaryGrid.get(bk)) {
-                            if (distSq(p, b) < riverWidthSq) {
-                                removed.add(i);
-                                isRemoved = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (isRemoved)
+            for (int v : children.getOrDefault(u, Collections.emptyList())) {
+                double d = dist(allPoints.get(u), allPoints.get(v));
+                // Try to find valid height
+                for (int attempt = 0; attempt < 10; attempt++) {
+                    double slope = SLOPE_MIN + random.nextDouble() * (SLOPE_MAX - SLOPE_MIN);
+                    double h = hU + slope * d;
+                    if (h >= HEIGHT_MIN && h <= HEIGHT_MAX) {
+                        res.localHeights.put(v, h);
                         break;
-                }
-                if (isRemoved)
-                    break;
-            }
-        }
-
-        // Roots mapping (Old Root -> New Root closest to it if removed)
-        Map<Integer, Integer> finalRoots = new HashMap<>();
-        for (int r : roots) {
-            if (removed.contains(r)) {
-                // Determine which cluster this belonged to
-                int clusterId = treeIds[r];
-                // Find nearest surviving node in same cluster
-                int best = -1;
-                double minD = Double.MAX_VALUE;
-                for (int i = 0; i < points.size(); i++) {
-                    if (treeIds[i] == clusterId && !removed.contains(i)) {
-                        double d = distSq(points.get(r), points.get(i));
-                        if (d < minD) {
-                            minD = d;
-                            best = i;
-                        }
                     }
+                    if (attempt == 9)
+                        res.localHeights.put(v, Math.max(HEIGHT_MIN, Math.min(h, HEIGHT_MAX)));
                 }
-                if (best != -1)
-                    finalRoots.put(r, best);
-            } else {
-                finalRoots.put(r, r);
+                stack.push(v);
             }
         }
 
-        return new RiverResult(finalRoots, treeIds, removed);
+        return res;
     }
 
-    private static ForestResult buildForest(List<MathUtils.Point> points, Map<Integer, List<Integer>> adj,
-            Map<Integer, Integer> roots, int[] oldIds, Set<Integer> removed, ChunkRandom random) {
-        List<int[]> edges = new ArrayList<>();
-        Map<Integer, Integer> parent = new HashMap<>();
-        Set<Integer> validIds = new HashSet<>();
-        int[] newIds = new int[points.size()];
-        Arrays.fill(newIds, -1);
+    private static class PartitionResult {
+        Set<Integer> validIds;
+        List<int[]> edges;
+        double[] heights;
 
-        for (Map.Entry<Integer, Integer> entry : roots.entrySet()) {
-            int oldR = entry.getKey(); // Original root ID (used as cluster ID)
-            int newR = entry.getValue(); // Actual point index for the root
-
-            // Per-component Prim's algorithm (or BFS/Dijkstra for shortest path tree)
-            PriorityQueue<Edge> pq = new PriorityQueue<>();
-            newIds[newR] = oldR; // Mark this point as belonging to this forest component
-            validIds.add(newR);
-            parent.put(newR, null); // Root has no parent
-
-            for (int v : adj.getOrDefault(newR, Collections.emptyList())) {
-                // Only consider neighbors that are not removed and belong to the same original
-                // cluster
-                if (!removed.contains(v) && oldIds[v] == oldR) {
-                    pq.add(new Edge(dist(points.get(newR), points.get(v)), newR, v));
-                }
-            }
-
-            while (!pq.isEmpty()) {
-                Edge e = pq.poll();
-                // If the destination node 'v' has not been visited yet for this forest
-                // component
-                if (newIds[e.v] == -1) {
-                    newIds[e.v] = oldR; // Assign it to this component
-                    validIds.add(e.v);
-                    edges.add(new int[] { e.u, e.v }); // Add edge to the forest
-                    parent.put(e.v, e.u); // Set parent
-
-                    // Add neighbors of 'v' to the priority queue
-                    for (int n : adj.getOrDefault(e.v, Collections.emptyList())) {
-                        // Only consider neighbors that are not removed, not yet visited in this
-                        // component,
-                        // and belong to the same original cluster
-                        if (!removed.contains(n) && newIds[n] == -1 && oldIds[n] == oldR) {
-                            pq.add(new Edge(dist(points.get(e.v), points.get(n)), e.v, n));
-                        }
-                    }
-                }
-            }
+        public PartitionResult(Set<Integer> v, List<int[]> e, double[] h) {
+            this.validIds = v;
+            this.edges = e;
+            this.heights = h;
         }
-
-        return new ForestResult(edges, parent, validIds);
     }
 
     private static double distSq(MathUtils.Point p1, MathUtils.Point p2) {
@@ -425,59 +442,6 @@ public class BlueprintGenerator {
 
     private static double dist(MathUtils.Point p1, MathUtils.Point p2) {
         return Math.sqrt(distSq(p1, p2));
-    }
-
-    private static double[] calcHeights(List<MathUtils.Point> points, Map<Integer, Integer> roots,
-            Map<Integer, Integer> parent, Set<Integer> validIds, ChunkRandom random, boolean isNether) {
-
-        double HEIGHT_MIN = isNether ? 40 : -32;
-        double HEIGHT_MAX = isNether ? 88 : 310;
-        double ROOT_H_MIN = isNether ? 30 : 63;
-        double ROOT_H_MAX = isNether ? 100 : 196;
-        double SLOPE_MIN = -0.125;
-        double SLOPE_MAX = 0.125;
-
-        double[] heights = new double[points.size()];
-        Arrays.fill(heights, HEIGHT_MIN - (isNether ? 5.0 : 10.0));
-
-        // Inverse parent map (children)
-        Map<Integer, List<Integer>> children = new HashMap<>();
-        for (int i = 0; i < points.size(); i++)
-            children.put(i, new ArrayList<>());
-        for (Map.Entry<Integer, Integer> entry : parent.entrySet()) {
-            if (entry.getValue() != null) {
-                children.get(entry.getValue()).add(entry.getKey());
-            }
-        }
-
-        Stack<Integer> stack = new Stack<>();
-        stack.addAll(roots.values());
-
-        for (int r : stack) {
-            heights[r] = ROOT_H_MIN + random.nextDouble() * (ROOT_H_MAX - ROOT_H_MIN);
-        }
-
-        while (!stack.isEmpty()) {
-            int u = stack.pop();
-            for (int v : children.get(u)) {
-                if (!validIds.contains(v))
-                    continue;
-                double dist = dist(points.get(u), points.get(v));
-                // Try to find valid height
-                for (int attempt = 0; attempt < 10; attempt++) {
-                    double slope = SLOPE_MIN + random.nextDouble() * (SLOPE_MAX - SLOPE_MIN);
-                    double h = heights[u] + slope * dist;
-                    if (h >= HEIGHT_MIN && h <= HEIGHT_MAX) {
-                        heights[v] = h;
-                        break;
-                    }
-                    if (attempt == 9)
-                        heights[v] = Math.max(HEIGHT_MIN, Math.min(h, HEIGHT_MAX));
-                }
-                stack.push(v);
-            }
-        }
-        return heights;
     }
 
     private static int[] assignBiomes(List<MathUtils.Point> points, double[] heights, Set<Integer> validIds, long seed,
