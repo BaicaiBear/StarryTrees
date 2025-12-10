@@ -9,8 +9,7 @@ public record GenerationGroup(Identifier systemGeneratorId, float weight) {
 	public static final Codec<GenerationGroup> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 					Identifier.CODEC.fieldOf("system_generator").forGetter(generator -> generator.systemGeneratorId),
-					Codec.FLOAT.fieldOf("weight").forGetter(generator -> generator.weight)
-			).apply(instance, GenerationGroup::new)
-	);
-	
+					Codec.FLOAT.fieldOf("weight").forGetter(generator -> generator.weight))
+					.apply(instance, GenerationGroup::new));
+
 }

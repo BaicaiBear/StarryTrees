@@ -15,9 +15,14 @@ import java.util.*;
 public class BlueprintManager {
 
     private static BlueprintManager INSTANCE;
-    private BlueprintData data;
-    private KDTree kdTree;
-    private double maxSphereRadius = 300.0; // Default fallback
+
+    // Maps keyed by Dimension ID (e.g., "starry_skies:overworld")
+    private final Map<net.minecraft.util.Identifier, BlueprintData> blueprints = new HashMap<>();
+    private final Map<net.minecraft.util.Identifier, KDTree> kdTrees = new HashMap<>();
+    private final Map<net.minecraft.util.Identifier, Double> maxRadii = new HashMap<>();
+
+    private final Map<net.minecraft.util.Identifier, BridgeData> bridges = new HashMap<>();
+    private final Map<net.minecraft.util.Identifier, Map<Long, List<Edge>>> bridgeIndices = new HashMap<>();
 
     private BlueprintManager() {
         load();
@@ -31,98 +36,197 @@ public class BlueprintManager {
     }
 
     public void load() {
-        this.data = null;
-        Path blueprintPath = null;
-        this.maxSphereRadius = 300.0;
+        this.blueprints.clear();
+        this.kdTrees.clear();
+        this.maxRadii.clear();
+        this.bridges.clear();
+        this.bridgeIndices.clear();
+
+        // 1. Load Overworld
+        net.minecraft.util.Identifier overworldId = StarrySkies.id("overworld");
+        loadBlueprint(overworldId, "starry_skies_blueprint.json");
+        loadBridges(overworldId, "bridges_blueprint.json");
+
+        // 2. Load Nether
+        net.minecraft.util.Identifier netherId = StarrySkies.id("nether");
+        loadBlueprint(netherId, "starry_skies_nether_blueprint.json");
+        loadBridges(netherId, "bridges_nether_blueprint.json");
+    }
+
+    private void loadBlueprint(net.minecraft.util.Identifier id, String filename) {
+        BlueprintData data = null;
+        Double maxR = 300.0;
 
         try {
-            Path configDir = FabricLoader.getInstance().getConfigDir();
-            blueprintPath = configDir.resolve("starry_skies_blueprint.json");
+            Path configDir = FabricLoader.getInstance().getConfigDir().resolve("starrytrees");
+            if (!Files.exists(configDir)) {
+                Files.createDirectories(configDir);
+            }
+            Path path = configDir.resolve(filename);
 
-            if (Files.exists(blueprintPath)) {
-                try (Reader reader = Files.newBufferedReader(blueprintPath)) {
-                    this.data = new Gson().fromJson(reader, BlueprintData.class);
-                    StarrySkies.LOGGER.info("Loaded blueprint from Fabric Config: " + blueprintPath);
+            ensureFileExists(path, filename);
+
+            if (Files.exists(path)) {
+                try (Reader reader = Files.newBufferedReader(path)) {
+                    data = new Gson().fromJson(reader, BlueprintData.class);
+                    StarrySkies.LOGGER.info("Loaded blueprint for " + id + " from " + path);
                 }
             } else {
-                StarrySkies.LOGGER.warn("Blueprint config not found at " + blueprintPath + ". Generating blank file.");
-                generateBlankBlueprint(blueprintPath);
+                StarrySkies.LOGGER.warn("Blueprint config not found at " + path + " and could not be created.");
+                data = new BlueprintData();
+                data.nodes = new ArrayList<>();
+                data.metadata = new Metadata();
             }
         } catch (Exception e) {
-            StarrySkies.LOGGER.error("Failed to load blueprint from Fabric Config: " + e.getMessage());
+            StarrySkies.LOGGER.error("Failed to load blueprint " + filename + ": " + e.getMessage());
         }
 
-        // Finalize Safety Check
-        if (this.data == null) {
-            this.data = new BlueprintData();
-            this.data.nodes = new ArrayList<>();
-            this.data.metadata = new Metadata();
+        // Safety
+        if (data == null) {
+            data = new BlueprintData();
+            data.nodes = new ArrayList<>();
+            data.metadata = new Metadata();
+        }
+        if (data.nodes == null)
+            data.nodes = new ArrayList<>();
+
+        // Scan Max Radius
+        if (!data.nodes.isEmpty()) {
+            double r = 0;
+            for (BlueprintNode node : data.nodes) {
+                if (node.radius > r)
+                    r = node.radius;
+            }
+            maxR = r + 50.0;
         }
 
-        if (this.data.nodes == null) {
-            this.data.nodes = new ArrayList<>();
+        this.blueprints.put(id, data);
+        this.maxRadii.put(id, maxR);
+
+        // Build Spatial Index based on 2D nodes
+        List<BlueprintNode> nodes = new ArrayList<>(data.nodes);
+        this.kdTrees.put(id, new KDTree(nodes));
+    }
+
+    private void loadBridges(net.minecraft.util.Identifier id, String filename) {
+        BridgeData data = null;
+        try {
+            Path configDir = FabricLoader.getInstance().getConfigDir().resolve("starrytrees");
+            if (!Files.exists(configDir)) {
+                Files.createDirectories(configDir);
+            }
+            Path path = configDir.resolve(filename);
+
+            ensureFileExists(path, filename);
+
+            if (Files.exists(path)) {
+                try (Reader reader = Files.newBufferedReader(path)) {
+                    data = new Gson().fromJson(reader, BridgeData.class);
+                    StarrySkies.LOGGER.info("Loaded bridges for " + id + " from " + path);
+                }
+            } else {
+                StarrySkies.LOGGER.warn("Bridge config not found at " + path + " and could not be created.");
+                data = new BridgeData();
+                data.edges = new ArrayList<>();
+            }
+        } catch (Exception e) {
+            StarrySkies.LOGGER.error("Failed to load bridges " + filename + ": " + e.getMessage());
         }
 
-        // Scan for max radius
-        if (!this.data.nodes.isEmpty()) {
-            double maxR = 0;
-            for (BlueprintNode node : this.data.nodes) {
-                if (node.radius > maxR) {
-                    maxR = node.radius;
+        if (data == null) {
+            data = new BridgeData();
+            data.edges = new ArrayList<>();
+        }
+        if (data.edges == null)
+            data.edges = new ArrayList<>();
+
+        this.bridges.put(id, data);
+
+        if (!data.edges.isEmpty()) {
+            buildBridgeIndex(id, data);
+        } else {
+            this.bridgeIndices.put(id, new HashMap<>());
+        }
+    }
+
+    private void ensureFileExists(Path path, String filename) {
+        if (!Files.exists(path)) {
+            try (java.io.InputStream in = BlueprintManager.class.getResourceAsStream("/blueprints/" + filename)) {
+                if (in != null) {
+                    Files.copy(in, path);
+                    StarrySkies.LOGGER.info("Created default config for " + filename);
+                } else {
+                    StarrySkies.LOGGER
+                            .warn("Default blueprint/bridge file not found in resources: /blueprints/" + filename);
+                }
+            } catch (IOException e) {
+                StarrySkies.LOGGER.error("Failed to create default config for " + filename + ": " + e.getMessage());
+            }
+        }
+    }
+
+    private static final int BRIDGE_REGION_SIZE = 512;
+
+    private void buildBridgeIndex(net.minecraft.util.Identifier id, BridgeData data) {
+        Map<Long, List<Edge>> index = new HashMap<>();
+        for (List<List<Integer>> rawEdge : data.edges) {
+            Edge edge = new Edge(rawEdge);
+            if (edge.size() < 2)
+                continue;
+
+            int minX = Math.min(edge.getStart()[0], edge.getEnd()[0]);
+            int maxX = Math.max(edge.getStart()[0], edge.getEnd()[0]);
+            int minZ = Math.min(edge.getStart()[2], edge.getEnd()[2]);
+            int maxZ = Math.max(edge.getStart()[2], edge.getEnd()[2]);
+
+            int minRegX = Math.floorDiv(minX, BRIDGE_REGION_SIZE);
+            int maxRegX = Math.floorDiv(maxX, BRIDGE_REGION_SIZE);
+            int minRegZ = Math.floorDiv(minZ, BRIDGE_REGION_SIZE);
+            int maxRegZ = Math.floorDiv(maxZ, BRIDGE_REGION_SIZE);
+
+            for (int rX = minRegX; rX <= maxRegX; rX++) {
+                for (int rZ = minRegZ; rZ <= maxRegZ; rZ++) {
+                    long key = ChunkPos.toLong(rX, rZ);
+                    index.computeIfAbsent(key, k -> new ArrayList<>()).add(edge);
                 }
             }
-            this.maxSphereRadius = maxR + 50.0; // Add padding for chunks
-            StarrySkies.LOGGER.info("Blueprint scanning: Max Sphere Radius found = " + maxR
-                    + ". Setting Search Radius to " + this.maxSphereRadius);
         }
-
-        buildSpatialIndex();
-        if (!this.data.nodes.isEmpty()) {
-            StarrySkies.LOGGER.info("Blueprint loaded successfully. Nodes: " + this.data.nodes.size());
-        }
-
-        loadBridges();
+        this.bridgeIndices.put(id, index);
     }
 
-    private void generateBlankBlueprint(Path path) {
-        this.data = new BlueprintData();
-        this.data.nodes = new ArrayList<>();
-        this.data.metadata = new Metadata();
-        this.data.metadata.seed = 0;
-        this.data.metadata.num_nodes = 0;
-        this.data.metadata.radius_map = 0;
-
-        try (Writer writer = Files.newBufferedWriter(path)) {
-            new GsonBuilder().setPrettyPrinting().create().toJson(this.data, writer);
-        } catch (IOException e) {
-            StarrySkies.LOGGER.error("Failed to generate blank blueprint file: " + e.getMessage());
-        }
-    }
-
-    private void buildSpatialIndex() {
-        // Build 2D KD-Tree on X, Z
-        if (this.data.nodes != null && !this.data.nodes.isEmpty()) {
-            List<BlueprintNode> nodes = new ArrayList<>(this.data.nodes);
-            this.kdTree = new KDTree(nodes);
-        } else {
-            this.kdTree = new KDTree(Collections.emptyList());
-        }
-    }
-
-    public BlueprintNode getNearestNode(int x, int z) {
-        if (kdTree == null || kdTree.root == null)
+    // Accessors
+    public BlueprintNode getNearestNode(net.minecraft.util.Identifier id, int x, int z) {
+        KDTree tree = kdTrees.get(id);
+        if (tree == null || tree.root == null)
             return null;
-        return kdTree.nearest(x, z);
+        return tree.nearest(x, z);
     }
 
-    public List<BlueprintNode> getSpheresInChunk(ChunkPos chunkPos) {
-        if (kdTree == null)
+    public BlueprintNode getNearestNode(net.minecraft.util.Identifier id, int x, int z,
+            java.util.function.Predicate<String> typePredicate) {
+        KDTree tree = kdTrees.get(id);
+        if (tree == null || tree.root == null)
+            return null;
+        return tree.nearest(x, z, typePredicate);
+    }
+
+    public List<BlueprintNode> getSpheresInChunk(net.minecraft.util.Identifier id, ChunkPos chunkPos) {
+        KDTree tree = kdTrees.get(id);
+        Double maxR = maxRadii.getOrDefault(id, 300.0);
+        if (tree == null)
             return Collections.emptyList();
 
-        int chunkCenterX = chunkPos.getCenterX();
-        int chunkCenterZ = chunkPos.getCenterZ();
-        // Use dynamically calculated max radius
-        return kdTree.rangeSearch(chunkCenterX, chunkCenterZ, this.maxSphereRadius);
+        return tree.rangeSearch(chunkPos.getCenterX(), chunkPos.getCenterZ(), maxR);
+    }
+
+    public List<Edge> getBridgesInRegion(net.minecraft.util.Identifier id, int blockX, int blockZ) {
+        Map<Long, List<Edge>> index = bridgeIndices.get(id);
+        if (index == null)
+            return Collections.emptyList();
+
+        long key = ChunkPos.toLong(Math.floorDiv(blockX, BRIDGE_REGION_SIZE),
+                Math.floorDiv(blockZ, BRIDGE_REGION_SIZE));
+        return index.getOrDefault(key, Collections.emptyList());
     }
 
     // Data Classes
@@ -158,7 +262,7 @@ public class BlueprintManager {
         }
     }
 
-    // Simple 2D KD-Tree
+    // KD-Tree Implementation
     private static class KDTree {
         Node root;
 
@@ -178,55 +282,53 @@ public class BlueprintManager {
         private Node build(List<BlueprintNode> nodes, int depth) {
             if (nodes.isEmpty())
                 return null;
-
-            int axis = depth % 2; // 0 for X, 1 for Z
+            int axis = depth % 2;
             nodes.sort((a, b) -> {
                 if (axis == 0)
                     return Double.compare(a.pos[0], b.pos[0]);
                 else
                     return Double.compare(a.pos[2], b.pos[2]);
             });
-
             int mid = nodes.size() / 2;
             Node node = new Node(nodes.get(mid));
-
             node.left = build(nodes.subList(0, mid), depth + 1);
             node.right = build(nodes.subList(mid + 1, nodes.size()), depth + 1);
-
             return node;
         }
 
         public BlueprintNode nearest(double x, double z) {
-            return nearest(root, x, z, root.data, Double.MAX_VALUE, 0);
+            return nearest(root, x, z, null, Double.MAX_VALUE, 0, null);
+        }
+
+        public BlueprintNode nearest(double x, double z, java.util.function.Predicate<String> typePredicate) {
+            return nearest(root, x, z, null, Double.MAX_VALUE, 0, typePredicate);
         }
 
         private BlueprintNode nearest(Node node, double targetX, double targetZ, BlueprintNode best, double bestDistSq,
-                int depth) {
+                int depth, java.util.function.Predicate<String> typePredicate) {
             if (node == null)
                 return best;
 
             double d = distSq(node.data.pos[0], node.data.pos[2], targetX, targetZ);
-            if (d < bestDistSq) {
+            if (d < bestDistSq && (typePredicate == null || typePredicate.test(node.data.type))) {
                 bestDistSq = d;
                 best = node.data;
             }
 
             int axis = depth % 2;
             double diff = (axis == 0) ? targetX - node.data.pos[0] : targetZ - node.data.pos[2];
-
             Node near = diff < 0 ? node.left : node.right;
             Node far = diff < 0 ? node.right : node.left;
 
-            best = nearest(near, targetX, targetZ, best, bestDistSq, depth + 1);
+            best = nearest(near, targetX, targetZ, best, bestDistSq, depth + 1, typePredicate);
 
-            // Check if we need to search the other side
             double planeDistSq = diff * diff;
-            d = distSq(best.pos[0], best.pos[2], targetX, targetZ);
-
-            if (planeDistSq < d) {
-                best = nearest(far, targetX, targetZ, best, d, depth + 1);
+            if (best != null) {
+                bestDistSq = distSq(best.pos[0], best.pos[2], targetX, targetZ);
             }
-
+            if (planeDistSq < bestDistSq) {
+                best = nearest(far, targetX, targetZ, best, bestDistSq, depth + 1, typePredicate);
+            }
             return best;
         }
 
@@ -246,117 +348,20 @@ public class BlueprintManager {
                 int depth) {
             if (node == null)
                 return;
-
             double d = distSq(node.data.pos[0], node.data.pos[2], x, z);
-            if (d <= radiusSq) {
+            if (d <= radiusSq)
                 result.add(node.data);
-            }
 
             int axis = depth % 2;
             double val = (axis == 0) ? node.data.pos[0] : node.data.pos[2];
             double target = (axis == 0) ? x : z;
             double radius = Math.sqrt(radiusSq);
 
-            if (target - radius <= val) {
+            if (target - radius <= val)
                 rangeSearch(node.left, x, z, radiusSq, result, depth + 1);
-            }
-            if (target + radius >= val) {
+            if (target + radius >= val)
                 rangeSearch(node.right, x, z, radiusSq, result, depth + 1);
-            }
         }
-    }
-
-    // Bridge Support
-    private BridgeData bridgeData;
-    private Map<Long, List<Edge>> bridgeIndex;
-    private static final int BRIDGE_REGION_SIZE = 512;
-
-    private void loadBridges() {
-        this.bridgeData = null;
-        Path bridgePath = null;
-
-        // 1. Try Config File (Fabric Recommended)
-        try {
-            Path configDir = FabricLoader.getInstance().getConfigDir();
-            bridgePath = configDir.resolve("bridges_blueprint.json");
-
-            if (Files.exists(bridgePath)) {
-                try (Reader reader = Files.newBufferedReader(bridgePath)) {
-                    this.bridgeData = new Gson().fromJson(reader, BridgeData.class);
-                    StarrySkies.LOGGER.info("Loaded bridges from Fabric Config: " + bridgePath);
-                }
-            } else {
-                StarrySkies.LOGGER.warn("Bridge config not found at " + bridgePath + ". Generating blank file.");
-                generateBlankBridges(bridgePath);
-            }
-        } catch (Exception e) {
-            StarrySkies.LOGGER.error("Failed to load bridges from Fabric Config: " + e.getMessage());
-        }
-
-        // Finalize Safety Check
-        if (this.bridgeData == null) {
-            this.bridgeData = new BridgeData();
-            this.bridgeData.edges = new ArrayList<>();
-        }
-        if (this.bridgeData.edges == null) {
-            this.bridgeData.edges = new ArrayList<>();
-        }
-
-        if (!this.bridgeData.edges.isEmpty()) {
-            buildBridgeIndex();
-            StarrySkies.LOGGER.info("Bridge index built. Edges: " + this.bridgeData.edges.size());
-        } else {
-            StarrySkies.LOGGER.info("Bridge data is empty (no edges). Skipping index build.");
-            this.bridgeIndex = new HashMap<>(); // Empty map
-        }
-    }
-
-    private void generateBlankBridges(Path path) {
-        this.bridgeData = new BridgeData();
-        this.bridgeData.edges = new ArrayList<>();
-
-        try (Writer writer = Files.newBufferedWriter(path)) {
-            new GsonBuilder().setPrettyPrinting().create().toJson(this.bridgeData, writer);
-        } catch (IOException e) {
-            StarrySkies.LOGGER.error("Failed to generate blank bridge file: " + e.getMessage());
-        }
-    }
-
-    private void buildBridgeIndex() {
-        this.bridgeIndex = new HashMap<>();
-        for (List<List<Integer>> rawEdge : this.bridgeData.edges) {
-            Edge edge = new Edge(rawEdge);
-            if (edge.size() < 2)
-                continue;
-            // Get bounding box of the edge
-            int minX = Math.min(edge.getStart()[0], edge.getEnd()[0]);
-            int maxX = Math.max(edge.getStart()[0], edge.getEnd()[0]);
-            int minZ = Math.min(edge.getStart()[2], edge.getEnd()[2]);
-            int maxZ = Math.max(edge.getStart()[2], edge.getEnd()[2]);
-
-            // Fix: Check floorDiv behavior for negative numbers if minX is negative
-            // Math.floorDiv accounts for negative numbers correctly (rounds towards
-            // negative infinity)
-            int minRegX = Math.floorDiv(minX, BRIDGE_REGION_SIZE);
-            int maxRegX = Math.floorDiv(maxX, BRIDGE_REGION_SIZE);
-            int minRegZ = Math.floorDiv(minZ, BRIDGE_REGION_SIZE);
-            int maxRegZ = Math.floorDiv(maxZ, BRIDGE_REGION_SIZE);
-
-            for (int rX = minRegX; rX <= maxRegX; rX++) {
-                for (int rZ = minRegZ; rZ <= maxRegZ; rZ++) {
-                    long key = ChunkPos.toLong(rX, rZ);
-                    this.bridgeIndex.computeIfAbsent(key, k -> new ArrayList<>()).add(edge);
-                }
-            }
-        }
-    }
-
-    public List<Edge> getBridgesInRegion(int blockX, int blockZ) {
-        if (bridgeIndex == null)
-            return Collections.emptyList();
-        long key = ChunkPos.toLong(Math.floorDiv(blockX, BRIDGE_REGION_SIZE),
-                Math.floorDiv(blockZ, BRIDGE_REGION_SIZE));
-        return bridgeIndex.getOrDefault(key, Collections.emptyList());
     }
 
     public static class BridgeData {

@@ -7,7 +7,16 @@ import org.jetbrains.annotations.*;
 
 import java.util.*;
 
+import java.awt.Point;
+
 public class Support {
+
+	public static Point getSystemCoordinateFromChunkCoordinate(int chunkX, int chunkZ) {
+		int systemSize = StarrySkies.CONFIG.systemSizeChunks;
+		int x = (int) Math.floor((double) chunkX / systemSize);
+		int z = (int) Math.floor((double) chunkZ / systemSize);
+		return new Point(x, z);
+	}
 
 	/**
 	 * Returns a random number between lowest and highest

@@ -1,15 +1,16 @@
 {
   "schemaVersion": 1,
   "id": "starry_skies",
-  "version": "${version}",
-  "name": "Starry Skies",
-  "description": "An implementation of the planetoids world gen for fabric",
+  "version": "MT1.0",
+  "name": "Starry Trees",
+  "description": "An implementation of the planetoids world gen for fabric modified by BaicaiBear",
   "authors": [
-    "DaFuqs"
+    "DaFuqs",
+    "BaicaiBear"
   ],
   "contact": {
-    "homepage": "https://github.com/DaFuqs/StarrySkies",
-    "sources": "https://github.com/DaFuqs/StarrySkies"
+    "homepage": "https://github.com/BaicaiBear/StarryTrees",
+    "sources": "https://github.com/BaicaiBear/StarryTrees"
   },
   "license": "MIT",
   "icon": "assets/starry_skies/icon.png",

@@ -23,11 +23,14 @@ public class EndPortalDecorator extends SphereDecorator<SphereDecoratorConfig.De
 		if (!sphere.isCenterInChunk(origin)) {
 			return false;
 		}
-		return this.generatePortal(world, new BlockPos(0, 64, 0), true);
+		return this.generatePortal(world, new BlockPos(0, 64, 0), false);
 	}
 
 	private boolean generatePortal(StructureWorldAccess structureWorldAccess, BlockPos blockPos, boolean open) {
-		Iterator<BlockPos> iterator = BlockPos.iterate(new BlockPos(blockPos.getX() - 4, blockPos.getY() - 1, blockPos.getZ() - 4), new BlockPos(blockPos.getX() + 4, blockPos.getY() + 32, blockPos.getZ() + 4)).iterator();
+		Iterator<BlockPos> iterator = BlockPos
+				.iterate(new BlockPos(blockPos.getX() - 4, blockPos.getY() - 1, blockPos.getZ() - 4),
+						new BlockPos(blockPos.getX() + 4, blockPos.getY() + 32, blockPos.getZ() + 4))
+				.iterator();
 
 		while (true) {
 			BlockPos blockPos2;
@@ -40,7 +43,8 @@ public class EndPortalDecorator extends SphereDecorator<SphereDecoratorConfig.De
 
 					BlockPos blockPos3 = blockPos.up(2);
 					for (Direction direction : Direction.Type.HORIZONTAL) {
-						structureWorldAccess.setBlockState(blockPos3.offset(direction), Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, direction), 3);
+						structureWorldAccess.setBlockState(blockPos3.offset(direction),
+								Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, direction), 3);
 					}
 
 					return true;

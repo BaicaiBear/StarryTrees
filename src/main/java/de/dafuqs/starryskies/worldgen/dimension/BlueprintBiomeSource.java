@@ -18,14 +18,19 @@ import java.util.stream.Stream;
 
 public class BlueprintBiomeSource extends BiomeSource {
 
-    public static final MapCodec<BlueprintBiomeSource> CODEC = RecordCodecBuilder.mapCodec(
+    public static final MapCodec<BlueprintBiomeSource> CODEC = RecordCodecBuilder.<BlueprintBiomeSource>mapCodec(
             (instance) -> instance.group(
-                    RegistryOps.getEntryLookupCodec(RegistryKeys.BIOME)).apply(instance, BlueprintBiomeSource::new));
+                    RegistryOps.<Biome, BlueprintBiomeSource>getEntryLookupCodec(RegistryKeys.BIOME),
+                    Identifier.CODEC.fieldOf("blueprint_id")
+                            .forGetter((BlueprintBiomeSource source) -> source.blueprintId))
+                    .apply(instance, BlueprintBiomeSource::new));
 
     private final RegistryEntryLookup<Biome> biomeRegistry;
+    private final Identifier blueprintId;
 
-    public BlueprintBiomeSource(RegistryEntryLookup<Biome> biomeRegistry) {
+    public BlueprintBiomeSource(RegistryEntryLookup<Biome> biomeRegistry, Identifier blueprintId) {
         this.biomeRegistry = biomeRegistry;
+        this.blueprintId = blueprintId;
     }
 
     @Override
@@ -47,7 +52,7 @@ public class BlueprintBiomeSource extends BiomeSource {
         int blockZ = z * 4;
 
         // Use BlueprintManager to find the nearest node
-        BlueprintManager.BlueprintNode node = BlueprintManager.get().getNearestNode(blockX, blockZ);
+        BlueprintManager.BlueprintNode node = BlueprintManager.get().getNearestNode(this.blueprintId, blockX, blockZ);
         if (node != null) {
             String biomeIdStr = node.biome;
 
@@ -72,11 +77,15 @@ public class BlueprintBiomeSource extends BiomeSource {
                 if (x % 100 == 0 && z % 100 == 0) {
                     System.err.println(
                             "BlueprintBiomeSource: Biome '" + biomeId + "' (raw: " + node.biome
-                                    + ") not found in registry! Fallback to PLAINS.");
+                                    + ") not found in registry! Fallback to default.");
                 }
             }
         }
+
         // Fallback
+        if (this.blueprintId.getPath().contains("nether")) {
+            return this.biomeRegistry.getOrThrow(BiomeKeys.NETHER_WASTES);
+        }
         return this.biomeRegistry.getOrThrow(BiomeKeys.PLAINS);
     }
 }

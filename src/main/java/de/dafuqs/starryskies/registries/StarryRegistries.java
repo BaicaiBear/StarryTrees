@@ -16,8 +16,11 @@ public class StarryRegistries {
 																										// it is used in
 																										// the locate
 																										// command
+
 		DynamicRegistries.registerSynced(StarryRegistryKeys.CONFIGURED_SPHERE_DECORATOR,
 				ConfiguredSphereDecorator.CODEC);
+		DynamicRegistries.registerSynced(StarryRegistryKeys.GENERATION_GROUP, GenerationGroup.CODEC);
+		DynamicRegistries.registerSynced(StarryRegistryKeys.SYSTEM_GENERATOR, SystemGenerator.CODEC);
 
 		Registry.register(Registries.BIOME_SOURCE, StarrySkies.id("blueprint"), BlueprintBiomeSource.CODEC);
 	}

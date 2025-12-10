@@ -1,33 +1,34 @@
 {
     "dimensions": {
         "minecraft:overworld": {
-            "type": "starry_skies:overworld",
+            "type": "minecraft:overworld",
             "generator": {
                 "type": "starry_skies:starry_skies",
+                "blueprint_id": "starry_skies:overworld",
                 "biome_source": {
-                    "type": "starry_skies:blueprint"
+                    "type": "starry_skies:blueprint",
+                    "blueprint_id": "starry_skies:overworld"
                 }
             }
         },
         "minecraft:the_nether": {
-            "type": "starry_skies:nether",
+            "type": "minecraft:the_nether",
             "generator": {
                 "type": "starry_skies:starry_skies",
-                "system_generator": "starry_skies:nether",
+                "blueprint_id": "starry_skies:nether",
                 "biome_source": {
-                    "type": "minecraft:fixed",
-                    "biome": "starry_skies:nether"
+                    "type": "starry_skies:blueprint",
+                    "blueprint_id": "starry_skies:nether"
                 }
             }
         },
         "minecraft:the_end": {
-            "type": "starry_skies:end",
+            "type": "minecraft:the_end",
             "generator": {
-                "type": "starry_skies:starry_skies",
+                "type": "starry_skies:starry_skies_system",
                 "system_generator": "starry_skies:end",
                 "biome_source": {
-                    "type": "minecraft:fixed",
-                    "biome": "starry_skies:end"
+                    "type": "minecraft:the_end"
                 }
             }
         }

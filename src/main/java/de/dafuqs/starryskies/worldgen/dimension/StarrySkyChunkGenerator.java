@@ -30,11 +30,19 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 
 	public static final MapCodec<StarrySkyChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
 			(instance) -> instance.group(
-					BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource))
+					BiomeSource.CODEC.fieldOf("biome_source").forGetter((generator) -> generator.biomeSource),
+					Identifier.CODEC.fieldOf("blueprint_id").forGetter((generator) -> generator.blueprintId))
 					.apply(instance, StarrySkyChunkGenerator::new));
 
-	public StarrySkyChunkGenerator(BiomeSource biomeSource) {
+	private final Identifier blueprintId;
+
+	public StarrySkyChunkGenerator(BiomeSource biomeSource, Identifier blueprintId) {
 		super(biomeSource);
+		this.blueprintId = blueprintId;
+	}
+
+	public Identifier getBlueprintId() {
+		return this.blueprintId;
 	}
 
 	@Override
@@ -55,7 +63,9 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		generateBridges(chunk, chunkRegion, noiseConfig);
 
 		// 2. Generate Spheres
-		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(chunk.getPos());
+		// 2. Generate Spheres
+		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(this.blueprintId,
+				chunk.getPos());
 
 		Registry<ConfiguredSphere<?, ?>> sphereRegistry = chunkRegion.getRegistryManager()
 				.getOrThrow(StarryRegistryKeys.CONFIGURED_SPHERE);
@@ -70,12 +80,15 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 
 			ConfiguredSphere<?, ?> configuredSphere = sphereRegistry.get(sphereId);
 
-			// Fallback: Try prefixing with "overworld/" if not found
-			if (configuredSphere == null && !node.type.startsWith("overworld/")) {
-				Identifier fallbackId = Identifier.of(StarrySkies.MOD_ID, "overworld/" + node.type);
-				configuredSphere = sphereRegistry.get(fallbackId);
-				if (configuredSphere != null) {
-					sphereId = fallbackId;
+			// Fallback: Try prefixing based on dimension/blueprint
+			if (configuredSphere == null) {
+				String fallbackPrefix = this.blueprintId.getPath().contains("nether") ? "nether/" : "overworld/";
+				if (!node.type.startsWith(fallbackPrefix)) {
+					Identifier fallbackId = Identifier.of(StarrySkies.MOD_ID, fallbackPrefix + node.type);
+					configuredSphere = sphereRegistry.get(fallbackId);
+					if (configuredSphere != null) {
+						sphereId = fallbackId;
+					}
 				}
 			}
 
@@ -104,7 +117,8 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		int chunkMinZ = chunkPos.getStartZ();
 		int chunkMaxZ = chunkPos.getEndZ();
 
-		List<BlueprintManager.Edge> bridges = BlueprintManager.get().getBridgesInRegion(chunkPos.getCenterX(),
+		List<BlueprintManager.Edge> bridges = BlueprintManager.get().getBridgesInRegion(this.blueprintId,
+				chunkPos.getCenterX(),
 				chunkPos.getCenterZ());
 
 		if (bridges == null || bridges.isEmpty())
@@ -307,7 +321,47 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 				return Blocks.SPRUCE_SLAB;
 			if (val < 8)
 				return Blocks.DIORITE_SLAB;
+			if (val < 8)
+				return Blocks.DIORITE_SLAB;
 			return Blocks.STONE_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.NETHER_WASTES)) {
+			// Nether Brick (60%), Red Nether Brick (40%)
+			if (val < 6)
+				return Blocks.NETHER_BRICK_SLAB;
+			return Blocks.RED_NETHER_BRICK_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.SOUL_SAND_VALLEY)) {
+			// Smooth Quartz (40%), Quartz (40%), Polished Blackstone (20%)
+			if (val < 4)
+				return Blocks.SMOOTH_QUARTZ_SLAB;
+			if (val < 8)
+				return Blocks.QUARTZ_SLAB;
+			return Blocks.POLISHED_BLACKSTONE_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.CRIMSON_FOREST)) {
+			// Crimson (50%), Red Nether Brick (30%), Nether Brick (20%)
+			if (val < 5)
+				return Blocks.CRIMSON_SLAB;
+			if (val < 8)
+				return Blocks.RED_NETHER_BRICK_SLAB;
+			return Blocks.NETHER_BRICK_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.WARPED_FOREST)) {
+			// Warped (50%), Blackstone (30%), Polished Blackstone Brick (20%)
+			if (val < 5)
+				return Blocks.WARPED_SLAB;
+			if (val < 8)
+				return Blocks.BLACKSTONE_SLAB;
+			return Blocks.POLISHED_BLACKSTONE_BRICK_SLAB;
+
+		} else if (biomeEntry.matchesKey(BiomeKeys.BASALT_DELTAS)) {
+			// Polished Blackstone Brick (50%), Blackstone (30%), Polished Blackstone (20%)
+			if (val < 5)
+				return Blocks.POLISHED_BLACKSTONE_BRICK_SLAB;
+			if (val < 8)
+				return Blocks.BLACKSTONE_SLAB;
+			return Blocks.POLISHED_BLACKSTONE_SLAB;
 		}
 
 		// Fallback Default: Stone (50%), Cobblestone (30%), Stone Bricks (20%)
@@ -393,7 +447,9 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		chunkRandom.setPopulationSeed(chunkRegion.getSeed(), chunkPos.getStartX(), chunkPos.getStartZ());
 		SpawnHelper.populateEntities(chunkRegion, biome, chunkPos, chunkRandom);
 
-		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(chunkPos);
+		// 2. Generate Spheres
+		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(this.blueprintId,
+				chunkPos);
 		Registry<ConfiguredSphere<?, ?>> sphereRegistry = chunkRegion.getRegistryManager()
 				.getOrThrow(StarryRegistryKeys.CONFIGURED_SPHERE);
 
@@ -428,13 +484,47 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
+	public com.mojang.datafixers.util.Pair<BlockPos, net.minecraft.registry.entry.RegistryEntry<net.minecraft.world.gen.structure.Structure>> locateStructure(
+			net.minecraft.server.world.ServerWorld world,
+			net.minecraft.registry.entry.RegistryEntryList<net.minecraft.world.gen.structure.Structure> structures,
+			BlockPos center, int radius, boolean skipExistingChunks) {
+		// If searching for meaningful structure (Stronghold) which is usually in the
+		// "Eye of Ender Located" tag
+		// Depending on MC version, we check if the set contains the Stronghold key
+		net.minecraft.registry.RegistryKey<net.minecraft.world.gen.structure.Structure> strongholdKey = net.minecraft.registry.RegistryKey
+				.of(net.minecraft.registry.RegistryKeys.STRUCTURE,
+						net.minecraft.util.Identifier.of("minecraft", "stronghold"));
+
+		// We need to resolve the entry from the registry for the check
+		// Using getOptional to avoid crash if not present, and handling RegistryKey
+		// lookup
+		java.util.Optional<net.minecraft.registry.entry.RegistryEntry.Reference<net.minecraft.world.gen.structure.Structure>> strongholdEntry = world
+				.getRegistryManager().getOrThrow(net.minecraft.registry.RegistryKeys.STRUCTURE)
+				.getOptional(strongholdKey);
+
+		if (strongholdEntry.isPresent() && structures.contains(strongholdEntry.get())) {
+			// Find nearest stronghold sphere
+			BlueprintManager.BlueprintNode node = BlueprintManager.get().getNearestNode(this.blueprintId, center.getX(),
+					center.getZ(),
+					type -> type != null && type.contains("stronghold"));
+			if (node != null) {
+				return new com.mojang.datafixers.util.Pair<>(new BlockPos(node.getX(), node.getY(), node.getZ()),
+						strongholdEntry.get());
+			}
+		}
+		return super.locateStructure(world, structures, center, radius, skipExistingChunks);
+	}
+
+	@Override
 	public void generateFeatures(StructureWorldAccess world, Chunk chunk, StructureAccessor structureAccessor) {
-		super.generateFeatures(world, chunk, structureAccessor);
+		// super.generateFeatures(world, chunk, structureAccessor); // Disabled to
+		// prevent vanilla structures
 
 		ChunkPos chunkPos = chunk.getPos();
 		long seed = world.getSeed();
 
-		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(chunkPos);
+		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(this.blueprintId,
+				chunkPos);
 		Registry<ConfiguredSphere<?, ?>> sphereRegistry = world.getRegistryManager()
 				.getOrThrow(StarryRegistryKeys.CONFIGURED_SPHERE);
 
@@ -446,11 +536,14 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 
 			// Fallback logic
 			ConfiguredSphere<?, ?> configuredSphere = sphereRegistry.get(sphereId);
-			if (configuredSphere == null && !node.type.startsWith("overworld/")) {
-				Identifier fallbackId = Identifier.of(StarrySkies.MOD_ID, "overworld/" + node.type);
-				ConfiguredSphere<?, ?> fallbackSphere = sphereRegistry.get(fallbackId);
-				if (fallbackSphere != null) {
-					configuredSphere = fallbackSphere;
+			if (configuredSphere == null) {
+				String fallbackPrefix = this.blueprintId.getPath().contains("nether") ? "nether/" : "overworld/";
+				if (!node.type.startsWith(fallbackPrefix)) {
+					Identifier fallbackId = Identifier.of(StarrySkies.MOD_ID, fallbackPrefix + node.type);
+					ConfiguredSphere<?, ?> fallbackSphere = sphereRegistry.get(fallbackId);
+					if (fallbackSphere != null) {
+						configuredSphere = fallbackSphere;
+					}
 				}
 			}
 

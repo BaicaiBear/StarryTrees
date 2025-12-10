@@ -9,6 +9,8 @@ import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.feature.util.*;
 import org.jetbrains.annotations.*;
 
+import java.util.*;
+
 public class SphereDecorationFeature extends Feature<DefaultFeatureConfig> {
 
 	public SphereDecorationFeature(Codec<DefaultFeatureConfig> configCodec) {
@@ -17,14 +19,20 @@ public class SphereDecorationFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(@NotNull FeatureContext featureContext) {
-		if (featureContext.getGenerator() instanceof StarrySkyChunkGenerator) {
-			// Blueprint integration
-			// FeatureContext gives origin block pos.
-			// But we need to check spheres overlapping this chunk/pos.
-			// Actually getSpheresInChunk handles checking spheres overlapping the chunk.
-
+		if (featureContext.getGenerator() instanceof StarrySkySystemChunkGenerator starrySkySystemChunkGenerator) {
+			// End Dimension / System-based generation
+			SystemGenerator systemGenerator = starrySkySystemChunkGenerator.getSystemGenerator();
+			for (PlacedSphere<?> sphere : systemGenerator.getSystem(featureContext.getWorld(),
+					featureContext.getOrigin())) {
+				if (sphere.isInChunk(new ChunkPos(featureContext.getOrigin()))) {
+					sphere.decorate(featureContext.getWorld(), featureContext.getOrigin(), featureContext.getRandom());
+				}
+			}
+			return true;
+		} else if (featureContext.getGenerator() instanceof StarrySkyChunkGenerator generator) {
+			// Overworld/Nether / Blueprint-based generation
 			var chunkPos = new ChunkPos(featureContext.getOrigin());
-			var nodes = BlueprintManager.get().getSpheresInChunk(chunkPos);
+			var nodes = BlueprintManager.get().getSpheresInChunk(generator.getBlueprintId(), chunkPos);
 
 			net.minecraft.registry.DynamicRegistryManager registryManager = featureContext.getWorld()
 					.getRegistryManager();
@@ -55,6 +63,7 @@ public class SphereDecorationFeature extends Feature<DefaultFeatureConfig> {
 					}
 				}
 			}
+			return true;
 		}
 		return false;
 	}

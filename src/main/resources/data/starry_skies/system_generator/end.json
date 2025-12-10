@@ -1,0 +1,12 @@
+{
+    "spheres_per_system": 10,
+    "min_distance_between_spheres": 20,
+    "floor_height": 0,
+    "floor_state": {
+        "Name": "minecraft:air"
+    },
+    "bottom_state": {
+        "Name": "minecraft:air"
+    },
+    "fixed_spheres": []
+}
