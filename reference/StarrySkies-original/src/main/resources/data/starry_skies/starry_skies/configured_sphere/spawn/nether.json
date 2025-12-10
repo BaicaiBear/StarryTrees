@@ -1,0 +1,19 @@
+{
+  "type": "starry_skies:simple",
+  "config": {
+    "block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:netherrack"
+      }
+    },
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 7,
+      "max_exclusive": 16
+    },
+    "decorators": {},
+    "spawns": []
+  }
+}

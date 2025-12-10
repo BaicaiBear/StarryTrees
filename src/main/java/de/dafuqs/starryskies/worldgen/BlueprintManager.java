@@ -2,7 +2,7 @@ package de.dafuqs.starryskies.worldgen;
 
 import com.google.gson.*;
 import de.dafuqs.starryskies.StarrySkies;
-import net.fabricmc.loader.api.FabricLoader;
+
 import net.minecraft.util.math.ChunkPos;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class BlueprintManager {
     private final Map<net.minecraft.util.Identifier, Map<Long, List<Edge>>> bridgeIndices = new HashMap<>();
 
     private BlueprintManager() {
-        load();
+        // Lazy init
     }
 
     public static BlueprintManager get() {
@@ -35,135 +35,123 @@ public class BlueprintManager {
         return INSTANCE;
     }
 
-    public void load() {
+    /**
+     * Initializes the BlueprintManager for the given server instance.
+     * Checks for world-specific blueprints; if missing, generates them using the
+     * world seed.
+     */
+    public void initialize(net.minecraft.server.MinecraftServer server) {
         this.blueprints.clear();
         this.kdTrees.clear();
         this.maxRadii.clear();
         this.bridges.clear();
         this.bridgeIndices.clear();
 
-        // 1. Load Overworld
-        net.minecraft.util.Identifier overworldId = StarrySkies.id("overworld");
-        loadBlueprint(overworldId, "starry_skies_blueprint.json");
-        loadBridges(overworldId, "bridges_blueprint.json");
+        Path worldDir = server.getSavePath(net.minecraft.util.WorldSavePath.ROOT).resolve("starrytrees");
+        try {
+            if (!Files.exists(worldDir)) {
+                Files.createDirectories(worldDir);
+            }
+        } catch (IOException e) {
+            StarrySkies.LOGGER.error("Failed to create world config directory: " + e.getMessage());
+            return;
+        }
 
-        // 2. Load Nether
+        long seed = server.getSaveProperties().getGeneratorOptions().getSeed();
+
+        // 1. Overworld
+        net.minecraft.util.Identifier overworldId = StarrySkies.id("overworld");
+        loadOrGenerate(overworldId, worldDir, "overworld_blueprint.json", "overworld_bridges.json", seed);
+
+        // 2. Nether
         net.minecraft.util.Identifier netherId = StarrySkies.id("nether");
-        loadBlueprint(netherId, "starry_skies_nether_blueprint.json");
-        loadBridges(netherId, "bridges_nether_blueprint.json");
+        loadOrGenerate(netherId, worldDir, "nether_blueprint.json", "nether_bridges.json", seed);
     }
 
-    private void loadBlueprint(net.minecraft.util.Identifier id, String filename) {
-        BlueprintData data = null;
+    private void loadOrGenerate(net.minecraft.util.Identifier id, Path dir, String bpMetaName, String bridgeName,
+            long seed) {
+        Path bpPath = dir.resolve(bpMetaName);
+        Path bgPath = dir.resolve(bridgeName);
+
+        if (!Files.exists(bpPath) || !Files.exists(bgPath)) {
+            StarrySkies.LOGGER.info("Generating new blueprints for " + id + " with seed " + seed);
+            // Generate
+            de.dafuqs.starryskies.worldgen.generator.BlueprintGenerator.GenerationResult result = de.dafuqs.starryskies.worldgen.generator.BlueprintGenerator
+                    .generate(seed, id);
+
+            // Save
+            saveJson(bpPath, result.blueprint());
+            saveJson(bgPath, result.bridges());
+
+            // Load directly
+            loadFromData(id, result.blueprint(), result.bridges());
+        } else {
+            StarrySkies.LOGGER.info("Loading existing blueprints for " + id + " from " + dir);
+            loadFromFile(id, bpPath, bgPath);
+        }
+    }
+
+    private void saveJson(Path path, Object data) {
+        try (Writer writer = Files.newBufferedWriter(path)) {
+            new GsonBuilder().setPrettyPrinting().create().toJson(data, writer);
+        } catch (IOException e) {
+            StarrySkies.LOGGER.error("Failed to save blueprint data to " + path + ": " + e.getMessage());
+        }
+    }
+
+    private void loadFromData(net.minecraft.util.Identifier id, BlueprintData bpData, BridgeData bridgeData) {
+        // Blueprint
         Double maxR = 300.0;
-
-        try {
-            Path configDir = FabricLoader.getInstance().getConfigDir().resolve("starrytrees");
-            if (!Files.exists(configDir)) {
-                Files.createDirectories(configDir);
-            }
-            Path path = configDir.resolve(filename);
-
-            ensureFileExists(path, filename);
-
-            if (Files.exists(path)) {
-                try (Reader reader = Files.newBufferedReader(path)) {
-                    data = new Gson().fromJson(reader, BlueprintData.class);
-                    StarrySkies.LOGGER.info("Loaded blueprint for " + id + " from " + path);
+        if (bpData != null) {
+            if (bpData.nodes == null)
+                bpData.nodes = new ArrayList<>();
+            if (!bpData.nodes.isEmpty()) {
+                double r = 0;
+                for (BlueprintNode node : bpData.nodes) {
+                    if (node.radius > r)
+                        r = node.radius;
                 }
-            } else {
-                StarrySkies.LOGGER.warn("Blueprint config not found at " + path + " and could not be created.");
-                data = new BlueprintData();
-                data.nodes = new ArrayList<>();
-                data.metadata = new Metadata();
+                maxR = r + 50.0;
             }
-        } catch (Exception e) {
-            StarrySkies.LOGGER.error("Failed to load blueprint " + filename + ": " + e.getMessage());
+            this.blueprints.put(id, bpData);
+            this.kdTrees.put(id, new KDTree(new ArrayList<>(bpData.nodes)));
         }
-
-        // Safety
-        if (data == null) {
-            data = new BlueprintData();
-            data.nodes = new ArrayList<>();
-            data.metadata = new Metadata();
-        }
-        if (data.nodes == null)
-            data.nodes = new ArrayList<>();
-
-        // Scan Max Radius
-        if (!data.nodes.isEmpty()) {
-            double r = 0;
-            for (BlueprintNode node : data.nodes) {
-                if (node.radius > r)
-                    r = node.radius;
-            }
-            maxR = r + 50.0;
-        }
-
-        this.blueprints.put(id, data);
         this.maxRadii.put(id, maxR);
 
-        // Build Spatial Index based on 2D nodes
-        List<BlueprintNode> nodes = new ArrayList<>(data.nodes);
-        this.kdTrees.put(id, new KDTree(nodes));
-    }
-
-    private void loadBridges(net.minecraft.util.Identifier id, String filename) {
-        BridgeData data = null;
-        try {
-            Path configDir = FabricLoader.getInstance().getConfigDir().resolve("starrytrees");
-            if (!Files.exists(configDir)) {
-                Files.createDirectories(configDir);
-            }
-            Path path = configDir.resolve(filename);
-
-            ensureFileExists(path, filename);
-
-            if (Files.exists(path)) {
-                try (Reader reader = Files.newBufferedReader(path)) {
-                    data = new Gson().fromJson(reader, BridgeData.class);
-                    StarrySkies.LOGGER.info("Loaded bridges for " + id + " from " + path);
-                }
+        // Bridges
+        if (bridgeData != null) {
+            if (bridgeData.edges == null)
+                bridgeData.edges = new ArrayList<>();
+            this.bridges.put(id, bridgeData);
+            if (!bridgeData.edges.isEmpty()) {
+                buildBridgeIndex(id, bridgeData);
             } else {
-                StarrySkies.LOGGER.warn("Bridge config not found at " + path + " and could not be created.");
-                data = new BridgeData();
-                data.edges = new ArrayList<>();
+                this.bridgeIndices.put(id, new HashMap<>());
             }
+        }
+    }
+
+    private void loadFromFile(net.minecraft.util.Identifier id, Path bpPath, Path bgPath) {
+        BlueprintData bpData = null;
+        BridgeData bridgeData = null;
+        Gson gson = new Gson();
+
+        try (Reader reader = Files.newBufferedReader(bpPath)) {
+            bpData = gson.fromJson(reader, BlueprintData.class);
         } catch (Exception e) {
-            StarrySkies.LOGGER.error("Failed to load bridges " + filename + ": " + e.getMessage());
+            StarrySkies.LOGGER.error("Failed to load blueprint from " + bpPath + ": " + e.getMessage());
         }
 
-        if (data == null) {
-            data = new BridgeData();
-            data.edges = new ArrayList<>();
+        try (Reader reader = Files.newBufferedReader(bgPath)) {
+            bridgeData = gson.fromJson(reader, BridgeData.class);
+        } catch (Exception e) {
+            StarrySkies.LOGGER.error("Failed to load bridges from " + bgPath + ": " + e.getMessage());
         }
-        if (data.edges == null)
-            data.edges = new ArrayList<>();
 
-        this.bridges.put(id, data);
-
-        if (!data.edges.isEmpty()) {
-            buildBridgeIndex(id, data);
-        } else {
-            this.bridgeIndices.put(id, new HashMap<>());
-        }
+        loadFromData(id, bpData, bridgeData);
     }
 
-    private void ensureFileExists(Path path, String filename) {
-        if (!Files.exists(path)) {
-            try (java.io.InputStream in = BlueprintManager.class.getResourceAsStream("/blueprints/" + filename)) {
-                if (in != null) {
-                    Files.copy(in, path);
-                    StarrySkies.LOGGER.info("Created default config for " + filename);
-                } else {
-                    StarrySkies.LOGGER
-                            .warn("Default blueprint/bridge file not found in resources: /blueprints/" + filename);
-                }
-            } catch (IOException e) {
-                StarrySkies.LOGGER.error("Failed to create default config for " + filename + ": " + e.getMessage());
-            }
-        }
-    }
+    // Cleaned up unused methods
 
     private static final int BRIDGE_REGION_SIZE = 512;
 

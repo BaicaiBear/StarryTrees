@@ -1,0 +1,29 @@
+{
+  "type": "starry_skies:simple",
+  "config": {
+    "block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:soul_sand"
+      }
+    },
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 6,
+      "max_exclusive": 12
+    },
+
+    "decorators": {
+      "starry_skies:center_pond_lava": 0.05,
+      "starry_skies:soul_fire": 0.25,
+      "starry_skies:nether_wart": 0.2,
+      "starry_skies:dried_ghasts": 0.1
+    },
+    "spawns": [],
+    "generation": {
+      "weight": 6.0,
+      "group": "starry_skies:nether/essential"
+    }
+  }
+}

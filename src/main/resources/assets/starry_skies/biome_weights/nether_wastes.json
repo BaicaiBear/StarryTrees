@@ -1,0 +1,274 @@
+[
+  {
+    "id": "ores/nether_quartz_ore",
+    "size": [
+      6,
+      15
+    ],
+    "normalized_weight": 0.216702
+  },
+  {
+    "id": "decorative/blackstone",
+    "size": [
+      5,
+      10
+    ],
+    "normalized_weight": 0.096681
+  },
+  {
+    "id": "ores/nether_gold_ore",
+    "size": [
+      5,
+      10
+    ],
+    "normalized_weight": 0.086679
+  },
+  {
+    "id": "fluid/lava_glass",
+    "size": [
+      5,
+      14
+    ],
+    "normalized_weight": 0.073932
+  },
+  {
+    "id": "decorative/obsidian",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.072511
+  },
+  {
+    "id": "essential/netherrack",
+    "size": [
+      7,
+      16
+    ],
+    "normalized_weight": 0.062004
+  },
+  {
+    "id": "essential/magma_sprinkled_netherrack",
+    "size": [
+      7,
+      16
+    ],
+    "normalized_weight": 0.054947
+  },
+  {
+    "id": "decorative/glass/red_stained_glass",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.050535
+  },
+  {
+    "id": "decorative/crying_obsidian",
+    "size": [
+      4,
+      6
+    ],
+    "normalized_weight": 0.048342
+  },
+  {
+    "id": "fluid/lava_stone",
+    "size": [
+      5,
+      14
+    ],
+    "normalized_weight": 0.036967
+  },
+  {
+    "id": "fluid/lava_glass_magma",
+    "size": [
+      5,
+      20
+    ],
+    "normalized_weight": 0.029574
+  },
+  {
+    "id": "fluid/lava_stone_magma",
+    "size": [
+      5,
+      20
+    ],
+    "normalized_weight": 0.029574
+  },
+  {
+    "id": "essential/glowstone",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.023274
+  },
+  {
+    "id": "essential/magma_block",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.018231
+  },
+  {
+    "id": "fluid/lava_obsidian",
+    "size": [
+      10,
+      20
+    ],
+    "normalized_weight": 0.014787
+  },
+  {
+    "id": "decorative/glass/yellow_stained_glass",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.014155
+  },
+  {
+    "id": "ores/ancient_debris",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.010834
+  },
+  {
+    "id": "decorative/glass/black_stained_glass",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.009609
+  },
+  {
+    "id": "decorative/glass/orange_stained_glass",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.009203
+  },
+  {
+    "id": "treasure/nether_fortress",
+    "size": [
+      25,
+      35
+    ],
+    "normalized_weight": 0.007142
+  },
+  {
+    "id": "treasure/small_cave",
+    "size": [
+      10,
+      15
+    ],
+    "normalized_weight": 0.007142
+  },
+  {
+    "id": "essential/soul_sand",
+    "size": [
+      6,
+      12
+    ],
+    "normalized_weight": 0.006102
+  },
+  {
+    "id": "essential/blackstone",
+    "size": [
+      8,
+      20
+    ],
+    "normalized_weight": 0.004654
+  },
+  {
+    "id": "essential/gravel",
+    "size": [
+      5,
+      7
+    ],
+    "normalized_weight": 0.004654
+  },
+  {
+    "id": "fluid/lava_bedrock",
+    "size": [
+      10,
+      20
+    ],
+    "normalized_weight": 0.003695
+  },
+  {
+    "id": "dungeon/strider",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.001571
+  },
+  {
+    "id": "treasure/bedrock",
+    "size": [
+      4,
+      7
+    ],
+    "normalized_weight": 0.00143
+  },
+  {
+    "id": "treasure/huge_cave",
+    "size": [
+      20,
+      30
+    ],
+    "normalized_weight": 0.00143
+  },
+  {
+    "id": "essential/basalt",
+    "size": [
+      10,
+      25
+    ],
+    "normalized_weight": 0.000933
+  },
+  {
+    "id": "essential/soul_soil",
+    "size": [
+      6,
+      10
+    ],
+    "normalized_weight": 0.000606
+  },
+  {
+    "id": "dungeon/blaze",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.000525
+  },
+  {
+    "id": "dungeon/enderman",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.000525
+  },
+  {
+    "id": "dungeon/magma_cube",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.000525
+  },
+  {
+    "id": "dungeon/wither_skeleton",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.000525
+  }
+]

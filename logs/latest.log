@@ -1,0 +1,9 @@
+[08:50:11] [Test worker/INFO]: Starting blueprint generation for minecraft:overworld
+[08:50:12] [Test worker/INFO]: Step 1 (Poisson) done: 50000 points. Took 440326ms
+[08:50:12] [Test worker/INFO]: Step 2 (Delaunay) done: 99865 triangles. Took 666ms
+[08:50:12] [Test worker/INFO]: Step 2b (Adjacency) done. Took 147ms
+[08:50:13] [Test worker/INFO]: Step 3 (Rivers) done. Took 799ms
+[08:50:14] [Test worker/INFO]: Step 4 (Forests) done. Took 607ms
+[08:50:14] [Test worker/INFO]: Step 5 (Heights) done. Took 245ms
+[08:50:14] [Test worker/INFO]: Step 6 (Biomes) done. Took 170ms
+[08:50:15] [Test worker/INFO]: Step 7 (Finalize) done. Total time: 443527ms

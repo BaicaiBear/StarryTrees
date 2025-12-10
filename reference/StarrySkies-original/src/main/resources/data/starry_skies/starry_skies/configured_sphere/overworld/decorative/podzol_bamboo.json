@@ -1,0 +1,52 @@
+{
+  "type": "starry_skies:modular",
+  "config": {
+    "main_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:dirt"
+      }
+    },
+    "top_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:podzol"
+      }
+    },
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 5,
+      "max_exclusive": 12
+    },
+
+    "decorators": {
+      "starry_skies:bamboo": 0.7,
+      "starry_skies:x_spot_jungle_temple": 0.7
+    },
+    "spawns": [
+      {
+        "type": "minecraft:panda",
+        "chance": 0.4,
+        "min_count": 1,
+        "max_count": 3
+      },
+      {
+        "type": "minecraft:ocelot",
+        "chance": 0.4,
+        "min_count": 1,
+        "max_count": 2
+      },
+      {
+        "type": "minecraft:parrot",
+        "chance": 0.4,
+        "min_count": 2,
+        "max_count": 2
+      }
+    ],
+    "generation": {
+      "weight": 0.5,
+      "group": "starry_skies:overworld/decorative"
+    }
+  }
+}

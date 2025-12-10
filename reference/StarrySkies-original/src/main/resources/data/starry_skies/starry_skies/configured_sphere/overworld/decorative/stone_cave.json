@@ -1,0 +1,74 @@
+{
+  "type": "starry_skies:cave",
+  "config": {
+    "shell_thickness": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 2,
+      "max_exclusive": 3
+    },
+    "shell_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 1000,
+          "data": {
+            "Name": "minecraft:stone"
+          }
+        },
+        {
+          "weight": 250,
+          "data": {
+            "Name": "minecraft:deepslate"
+          }
+        },
+        {
+          "weight": 100,
+          "data": {
+            "Name": "minecraft:granite"
+          }
+        },
+        {
+          "weight": 100,
+          "data": {
+            "Name": "minecraft:diorite"
+          }
+        },
+        {
+          "weight": 100,
+          "data": {
+            "Name": "minecraft:andesite"
+          }
+        },
+        {
+          "weight": 10,
+          "data": {
+            "Name": "minecraft:cobblestone"
+          }
+        },
+        {
+          "weight": 1,
+          "data": {
+            "Name": "minecraft:mossy_cobblestone"
+          }
+        }
+      ]
+    },
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 5,
+      "max_exclusive": 20
+    },
+
+    "decorators": {
+      "starry_skies:treasure/abandoned_mineshaft_cave_floor": 0.5,
+      "starry_skies:red_mushrooms_cave": 0.3,
+      "starry_skies:brown_mushrooms_cave": 0.3
+    },
+    "spawns": [],
+    "generation": {
+      "weight": 2.0,
+      "group": "starry_skies:overworld/decorative"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "type": "starry_skies:modular",
+  "config": {
+    "main_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "terrestria:basalt_sand"
+      }
+    },
+    "bottom_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "terrestria:basalt_cobblestone"
+      }
+    },
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 5,
+      "max_exclusive": 15
+    },
+
+    "decorators": {
+      "starry_skies:mod_compat/terrestria/dead_grass": 0.75,
+      "starry_skies:mod_compat/terrestria/tiny_cactus": 0.75,
+      "starry_skies:mod_compat/terrestria/aloe_vera": 0.75,
+      "starry_skies:mod_compat/terrestria/agave": 0.75,
+      "starry_skies:mod_compat/terrestria/saguaro_cactus": 0.75
+    },
+    "spawns": [],
+    "generation": {
+      "weight": 0.3,
+      "group": "starry_skies:overworld/decorative"
+    }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "terrestria"
+      ]
+    }
+  ]
+}

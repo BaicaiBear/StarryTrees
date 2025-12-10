@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:red_concrete"
+    },
+    "title": {
+      "translate": "advancements.starry_skies.sphere_rainbow_concrete_powder.title"
+    },
+    "description": {
+      "translate": "advancements.starry_skies.sphere_rainbow_concrete_powder.description"
+    },
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "starry_skies:overworld/group_rainbow",
+  "criteria": {
+    "sphere_discovered": {
+      "trigger": "starry_skies:sphere_discovered",
+      "conditions": {
+        "ids": [
+          "starry_skies:overworld/treasure/rainbow/concrete_powder"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "type": "starry_skies:core",
+  "config": {
+    "core_block": {
+      "type": "starry_skies:unique_block_group_state_provider",
+      "group": "deepslate_lead_ore"
+    },
+    "shell_block": {
+      "type": "starry_skies:weighted_block_group_state_provider",
+      "group": "deepslates"
+    },
+    "core_radius": {
+      "min_inclusive": 4,
+      "max_exclusive": 6
+    },
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 5,
+      "max_exclusive": 15
+    },
+
+    "decorators": {},
+    "spawns": [],
+    "fabric:load_conditions": [
+      {
+        condition=starry_skies: unique_block_group_exist,
+        values=System.Object
+      []
+      }
+    ],
+    "generation": {
+      "weight": 0.5,
+      "group": "starry_skies:overworld/ores"
+    }
+  }
+}

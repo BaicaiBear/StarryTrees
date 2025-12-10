@@ -1,0 +1,32 @@
+{
+  "type": "starry_skies:rainbow",
+  "config": {
+    "blocks": [
+      "cinderscapes:crystalline_quartz",
+      "cinderscapes:crystalline_sulfur_quartz",
+      "cinderscapes:crystalline_rose_quartz",
+      "cinderscapes:crystalline_smoky_quartz"
+    ],
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 4,
+      "max_exclusive": 8
+    },
+
+    "decorators": {},
+    "spawns": [],
+    "generation": {
+      "weight": 0.2,
+      "group": "starry_skies:nether/treasure"
+    }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cinderscapes"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:podzol"
+    },
+    "title": {
+      "translate": "advancements.starry_skies.sphere_podzol.title"
+    },
+    "description": {
+      "translate": "advancements.starry_skies.sphere_podzol.description"
+    },
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "starry_skies:overworld/group_organic",
+  "criteria": {
+    "sphere_discovered": {
+      "trigger": "starry_skies:sphere_discovered",
+      "conditions": {
+        "ids": [
+          "starry_skies:overworld/decorative/podzol_bamboo",
+          "starry_skies:overworld/decorative/podzol_bamboo_pond",
+          "starry_skies:overworld/decorative/podzol_ferns"
+        ]
+      }
+    }
+  }
+}

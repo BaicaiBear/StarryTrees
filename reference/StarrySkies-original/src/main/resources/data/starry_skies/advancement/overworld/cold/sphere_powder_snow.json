@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:powder_snow_bucket"
+    },
+    "title": {
+      "translate": "advancements.starry_skies.sphere_powder_snow.title"
+    },
+    "description": {
+      "translate": "advancements.starry_skies.sphere_powder_snow.description"
+    },
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "starry_skies:overworld/group_cold",
+  "criteria": {
+    "sphere_discovered": {
+      "trigger": "starry_skies:sphere_discovered",
+      "conditions": {
+        "ids": [
+          "starry_skies:overworld/decorative/cold/powder_snow_ice",
+          "starry_skies:overworld/decorative/cold/powder_snow_ice_packed_ice"
+        ]
+      }
+    }
+  }
+}

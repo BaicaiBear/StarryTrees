@@ -1,0 +1,7 @@
+{
+  "group": "ocean_stones",
+  "blocks": {
+    "minecraft:clay": 1.0,
+    "minecraft:prismarine": 1.0
+  }
+}

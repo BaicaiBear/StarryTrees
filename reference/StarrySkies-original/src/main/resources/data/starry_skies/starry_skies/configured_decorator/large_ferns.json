@@ -1,0 +1,9 @@
+{
+  "type": "starry_skies:double_block",
+  "config": {
+    "block": {
+      "Name": "minecraft:large_fern"
+    },
+    "chance": 0.1
+  }
+}

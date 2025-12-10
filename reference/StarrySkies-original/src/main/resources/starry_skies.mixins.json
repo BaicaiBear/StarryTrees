@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "de.dafuqs.starryskies.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractFireBlockMixin",
+    "EndPortalBlockMixin",
+    "NetherPortalBlockMixin",
+    "ServerWorldMixin"
+  ],
+  "client": [
+    "fix.WorldRendererMixinFix"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

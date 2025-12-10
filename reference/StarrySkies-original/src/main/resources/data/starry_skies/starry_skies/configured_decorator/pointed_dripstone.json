@@ -1,0 +1,12 @@
+{
+  "type": "starry_skies:pointed_dripstone",
+  "config": {
+    "block": "minecraft:pointed_dripstone",
+    "height": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 1,
+      "max_inclusive": 5
+    },
+    "chance": 0.25
+  }
+}

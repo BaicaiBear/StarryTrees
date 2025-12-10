@@ -1,0 +1,706 @@
+[
+  {
+    "id": "wood/spruce_wood",
+    "size": [
+      5,
+      15
+    ],
+    "normalized_weight": 0.100513
+  },
+  {
+    "id": "essential/grass",
+    "size": [
+      5,
+      22
+    ],
+    "normalized_weight": 0.055165
+  },
+  {
+    "id": "fluid/water_glass_ice",
+    "size": [
+      8,
+      20
+    ],
+    "normalized_weight": 0.041293
+  },
+  {
+    "id": "ores/iron",
+    "size": [
+      6,
+      12
+    ],
+    "normalized_weight": 0.039774
+  },
+  {
+    "id": "ores/coal",
+    "size": [
+      7,
+      15
+    ],
+    "normalized_weight": 0.036327
+  },
+  {
+    "id": "decorative/plain/stone",
+    "size": [
+      5,
+      13
+    ],
+    "normalized_weight": 0.036291
+  },
+  {
+    "id": "fluid/water_ice_packed_ice",
+    "size": [
+      8,
+      20
+    ],
+    "normalized_weight": 0.032635
+  },
+  {
+    "id": "decorative/cold/snow_ice",
+    "size": [
+      5,
+      15
+    ],
+    "normalized_weight": 0.030956
+  },
+  {
+    "id": "decorative/stone_cave",
+    "size": [
+      5,
+      20
+    ],
+    "normalized_weight": 0.025893
+  },
+  {
+    "id": "decorative/cold/snow_ice_packed_ice",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.02576
+  },
+  {
+    "id": "decorative/cold/powder_snow_ice",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.022162
+  },
+  {
+    "id": "fluid/water_glass_clay",
+    "size": [
+      5,
+      10
+    ],
+    "normalized_weight": 0.020702
+  },
+  {
+    "id": "ores/copper",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.018378
+  },
+  {
+    "id": "ores/deepslate_redstone",
+    "size": [
+      9,
+      15
+    ],
+    "normalized_weight": 0.018378
+  },
+  {
+    "id": "ores/redstone",
+    "size": [
+      9,
+      15
+    ],
+    "normalized_weight": 0.018378
+  },
+  {
+    "id": "decorative/cold/snow_packed_ice_blue_ice",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.017061
+  },
+  {
+    "id": "decorative/cold/powder_snow_ice_packed_ice",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.016737
+  },
+  {
+    "id": "ores/lapis",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.016556
+  },
+  {
+    "id": "essential/sand",
+    "size": [
+      5,
+      13
+    ],
+    "normalized_weight": 0.015684
+  },
+  {
+    "id": "decorative/mycelium",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.015206
+  },
+  {
+    "id": "wood/acacia_wood",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.015199
+  },
+  {
+    "id": "decorative/podzol_bamboo",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.014755
+  },
+  {
+    "id": "decorative/podzol_ferns",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.014751
+  },
+  {
+    "id": "wood/oak_wood",
+    "size": [
+      8,
+      15
+    ],
+    "normalized_weight": 0.014325
+  },
+  {
+    "id": "ores/emerald",
+    "size": [
+      5,
+      6
+    ],
+    "normalized_weight": 0.013906
+  },
+  {
+    "id": "decorative/podzol_bamboo_pond",
+    "size": [
+      10,
+      15
+    ],
+    "normalized_weight": 0.013615
+  },
+  {
+    "id": "essential/glowstone",
+    "size": [
+      5,
+      10
+    ],
+    "normalized_weight": 0.013491
+  },
+  {
+    "id": "decorative/cold/ice_packed_ice",
+    "size": [
+      5,
+      15
+    ],
+    "normalized_weight": 0.012039
+  },
+  {
+    "id": "treasure/bee_hive",
+    "size": [
+      10,
+      16
+    ],
+    "normalized_weight": 0.011913
+  },
+  {
+    "id": "fluid/water_glass",
+    "size": [
+      5,
+      15
+    ],
+    "normalized_weight": 0.011043
+  },
+  {
+    "id": "decorative/dripstone_cave",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.010028
+  },
+  {
+    "id": "decorative/plain/andesite",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.010028
+  },
+  {
+    "id": "decorative/plain/deepslate",
+    "size": [
+      5,
+      11
+    ],
+    "normalized_weight": 0.010028
+  },
+  {
+    "id": "decorative/plain/diorite",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.010028
+  },
+  {
+    "id": "decorative/plain/granite",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.010028
+  },
+  {
+    "id": "decorative/plain/tuff",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.010028
+  },
+  {
+    "id": "decorative/rainbow/froglight",
+    "size": [
+      2,
+      4
+    ],
+    "normalized_weight": 0.009708
+  },
+  {
+    "id": "decorative/plain/mossy_cobblestone",
+    "size": [
+      5,
+      6
+    ],
+    "normalized_weight": 0.009348
+  },
+  {
+    "id": "ores/deepslate_coal",
+    "size": [
+      5,
+      15
+    ],
+    "normalized_weight": 0.00919
+  },
+  {
+    "id": "ores/deepslate_iron",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.00919
+  },
+  {
+    "id": "treasure/ice_cave",
+    "size": [
+      6,
+      10
+    ],
+    "normalized_weight": 0.007984
+  },
+  {
+    "id": "decorative/cold/ice_packed_ice_blue_ice",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.007732
+  },
+  {
+    "id": "essential/gravel",
+    "size": [
+      6,
+      10
+    ],
+    "normalized_weight": 0.006708
+  },
+  {
+    "id": "decorative/rainbow/terracotta",
+    "size": [
+      5,
+      16
+    ],
+    "normalized_weight": 0.006082
+  },
+  {
+    "id": "decorative/rainbow/glass",
+    "size": [
+      5,
+      16
+    ],
+    "normalized_weight": 0.005876
+  },
+  {
+    "id": "dungeon/enderman",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.005606
+  },
+  {
+    "id": "dungeon/zombie",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.005572
+  },
+  {
+    "id": "wood/azalea_wood",
+    "size": [
+      5,
+      12
+    ],
+    "normalized_weight": 0.005356
+  },
+  {
+    "id": "ores/pseudo/bone_block",
+    "size": [
+      4,
+      8
+    ],
+    "normalized_weight": 0.005326
+  },
+  {
+    "id": "decorative/rainbow/concrete_powder",
+    "size": [
+      5,
+      16
+    ],
+    "normalized_weight": 0.005293
+  },
+  {
+    "id": "dungeon/creeper",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.005162
+  },
+  {
+    "id": "decorative/grass_pond",
+    "size": [
+      10,
+      18
+    ],
+    "normalized_weight": 0.005015
+  },
+  {
+    "id": "decorative/plain/obsidian",
+    "size": [
+      3,
+      6
+    ],
+    "normalized_weight": 0.005015
+  },
+  {
+    "id": "decorative/speckled_stone",
+    "size": [
+      4,
+      15
+    ],
+    "normalized_weight": 0.005015
+  },
+  {
+    "id": "ores/deepslate_lapis",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.004991
+  },
+  {
+    "id": "ores/pseudo/hay_block",
+    "size": [
+      4,
+      8
+    ],
+    "normalized_weight": 0.004858
+  },
+  {
+    "id": "decorative/rainbow/concrete",
+    "size": [
+      5,
+      16
+    ],
+    "normalized_weight": 0.004612
+  },
+  {
+    "id": "ores/deepslate_gold",
+    "size": [
+      5,
+      10
+    ],
+    "normalized_weight": 0.004594
+  },
+  {
+    "id": "ores/gold",
+    "size": [
+      5,
+      10
+    ],
+    "normalized_weight": 0.004594
+  },
+  {
+    "id": "treasure/corals_stone",
+    "size": [
+      10,
+      20
+    ],
+    "normalized_weight": 0.004542
+  },
+  {
+    "id": "fluid/lava_glass",
+    "size": [
+      5,
+      20
+    ],
+    "normalized_weight": 0.00435
+  },
+  {
+    "id": "decorative/plain/coarse_dirt",
+    "size": [
+      5,
+      8
+    ],
+    "normalized_weight": 0.004012
+  },
+  {
+    "id": "dungeon/spider",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.003767
+  },
+  {
+    "id": "decorative/rainbow/wool",
+    "size": [
+      5,
+      16
+    ],
+    "normalized_weight": 0.003717
+  },
+  {
+    "id": "decorative/plain/cobblestone",
+    "size": [
+      5,
+      9
+    ],
+    "normalized_weight": 0.003009
+  },
+  {
+    "id": "dungeon/skeleton",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.002987
+  },
+  {
+    "id": "decorative/rooted_dirt",
+    "size": [
+      7,
+      12
+    ],
+    "normalized_weight": 0.002885
+  },
+  {
+    "id": "wood/dark_oak_wood",
+    "size": [
+      5,
+      15
+    ],
+    "normalized_weight": 0.002581
+  },
+  {
+    "id": "fluid/lava_stone_obsidian",
+    "size": [
+      10,
+      20
+    ],
+    "normalized_weight": 0.002421
+  },
+  {
+    "id": "fluid/lava_stone_magma",
+    "size": [
+      5,
+      20
+    ],
+    "normalized_weight": 0.0022
+  },
+  {
+    "id": "decorative/plain/cobbled_deepslate",
+    "size": [
+      4,
+      10
+    ],
+    "normalized_weight": 0.002006
+  },
+  {
+    "id": "fluid/lava_stone",
+    "size": [
+      5,
+      20
+    ],
+    "normalized_weight": 0.001966
+  },
+  {
+    "id": "ores/deepslate_copper",
+    "size": [
+      4,
+      6
+    ],
+    "normalized_weight": 0.001837
+  },
+  {
+    "id": "ores/deepslate_diamond",
+    "size": [
+      3,
+      7
+    ],
+    "normalized_weight": 0.001837
+  },
+  {
+    "id": "ores/diamond",
+    "size": [
+      4,
+      7
+    ],
+    "normalized_weight": 0.001837
+  },
+  {
+    "id": "treasure/amethyst_geode",
+    "size": [
+      6,
+      10
+    ],
+    "normalized_weight": 0.001709
+  },
+  {
+    "id": "treasure/brown_mushroom",
+    "size": [
+      4,
+      8
+    ],
+    "normalized_weight": 0.001709
+  },
+  {
+    "id": "treasure/huge_dirt_cave",
+    "size": [
+      20,
+      30
+    ],
+    "normalized_weight": 0.001709
+  },
+  {
+    "id": "treasure/sculk",
+    "size": [
+      7,
+      18
+    ],
+    "normalized_weight": 0.001709
+  },
+  {
+    "id": "decorative/sand_pond",
+    "size": [
+      10,
+      18
+    ],
+    "normalized_weight": 0.001321
+  },
+  {
+    "id": "wood/cherry_wood",
+    "size": [
+      5,
+      15
+    ],
+    "normalized_weight": 0.00082
+  },
+  {
+    "id": "wood/birch_wood",
+    "size": [
+      5,
+      15
+    ],
+    "normalized_weight": 0.000521
+  },
+  {
+    "id": "dungeon/bogged",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.00016
+  },
+  {
+    "id": "dungeon/breeze",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.00016
+  },
+  {
+    "id": "dungeon/cave_spider",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.00016
+  },
+  {
+    "id": "dungeon/drowned",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.00016
+  },
+  {
+    "id": "dungeon/husk",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.00016
+  },
+  {
+    "id": "dungeon/witch",
+    "size": [
+      6,
+      11
+    ],
+    "normalized_weight": 0.00016
+  }
+]

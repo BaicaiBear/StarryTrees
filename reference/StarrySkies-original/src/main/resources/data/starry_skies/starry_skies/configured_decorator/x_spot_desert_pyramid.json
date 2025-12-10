@@ -1,0 +1,9 @@
+{
+  "type": "starry_skies:x_spot",
+  "config": {
+    "loot_table": "minecraft:chests/desert_pyramid",
+    "marking_block": {
+      "Name": "minecraft:orange_terracotta"
+    }
+  }
+}

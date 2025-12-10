@@ -1,0 +1,34 @@
+{
+  "type": "starry_skies:bee_hive",
+  "config": {
+    "shell_thickness": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 3,
+      "max_inclusive": 5
+    },
+    "flower_ring_radius": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 2,
+      "max_inclusive": 3
+    },
+    "flower_ring_spacing": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 2,
+      "max_inclusive": 3
+    },
+    "bee_nest_chance": 0.12,
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 10,
+      "max_exclusive": 16
+    },
+
+    "decorators": {},
+    "spawns": [],
+    "generation": {
+      "weight": 4.0,
+      "group": "starry_skies:overworld/treasure"
+    }
+  }
+}

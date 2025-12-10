@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:grass_block"
+    },
+    "title": {
+      "translate": "advancements.starry_skies.sphere_grass.title"
+    },
+    "description": {
+      "translate": "advancements.starry_skies.sphere_grass.description"
+    },
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "starry_skies:overworld/group_organic",
+  "criteria": {
+    "sphere_discovered": {
+      "trigger": "starry_skies:sphere_discovered",
+      "conditions": {
+        "ids": [
+          "starry_skies:overworld/essential/grass"
+        ]
+      }
+    }
+  }
+}

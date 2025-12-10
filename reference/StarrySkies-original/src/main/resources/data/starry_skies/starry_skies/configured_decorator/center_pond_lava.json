@@ -1,0 +1,13 @@
+{
+  "type": "starry_skies:center_pond",
+  "config": {
+    "beach_block": {
+      "Name": "minecraft:obsidian"
+    },
+    "fluid_block": {
+      "Name": "minecraft:lava"
+    },
+    "loot_table": "minecraft:chests/ruined_portal",
+    "loot_table_chance": 0.25
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "type": "starry_skies:modular",
+  "config": {
+    "main_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:dirt"
+      }
+    },
+    "top_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:mycelium"
+      }
+    },
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 5,
+      "max_exclusive": 8
+    },
+
+    "decorators": {},
+    "spawns": [
+      {
+        "type": "minecraft:mooshroom",
+        "chance": 1.0,
+        "min_count": 2,
+        "max_count": 4
+      }
+    ],
+    "generation": {
+      "weight": 0.5,
+      "group": "starry_skies:overworld/decorative"
+    }
+  }
+}

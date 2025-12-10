@@ -1,0 +1,8 @@
+{
+  "feature": "starry_skies:sphere_decoration",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "group": "end_stones",
+  "blocks": {
+    "minecraft:end_stone": 10.0
+  }
+}

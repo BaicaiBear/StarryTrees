@@ -55,16 +55,16 @@ public class StarrySkies implements ModInitializer {
 		StarryFeatures.initialize();
 		SphereDecorators.initialize();
 
-		// Initialize BlueprintManager immediately
-		System.out.println("StarrySkies: Force init BlueprintManager during onInitialize");
-		BlueprintManager.get().load();
+		// Initialize BlueprintManager on server start to use world seed
+		/*
+		 * Removed legacy load() calls.
+		 * BlueprintManager now initializes per-world in the SERVER_STARTING event.
+		 */
 
 		// Build a final map of sphere generation data for each chunk generator
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-			// Verify or Reload if needed
-			if (BlueprintManager.get() == null) {
-				BlueprintManager.get().load();
-			}
+			// Initialize with world seed and path
+			BlueprintManager.get().initialize(server);
 
 			Registry<GenerationGroup> generationGroupRegistry = server.getRegistryManager()
 					.getOrThrow(StarryRegistryKeys.GENERATION_GROUP);

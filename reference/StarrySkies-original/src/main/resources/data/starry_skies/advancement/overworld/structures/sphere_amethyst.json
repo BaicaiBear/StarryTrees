@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:amethyst_block"
+    },
+    "title": {
+      "translate": "advancements.starry_skies.sphere_amethyst.title"
+    },
+    "description": {
+      "translate": "advancements.starry_skies.sphere_amethyst.description"
+    },
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "starry_skies:overworld/group_structures",
+  "criteria": {
+    "sphere_discovered": {
+      "trigger": "starry_skies:sphere_discovered",
+      "conditions": {
+        "ids": [
+          "starry_skies:overworld/treasure/amethyst_geode"
+        ]
+      }
+    }
+  }
+}

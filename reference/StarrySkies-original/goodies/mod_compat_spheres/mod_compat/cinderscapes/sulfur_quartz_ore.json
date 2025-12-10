@@ -1,0 +1,43 @@
+{
+  "type": "starry_skies:core",
+  "config": {
+    "core_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "cinderscapes:sulfur_quartz_ore"
+      }
+    },
+    "shell_block": {
+      "type": "starry_skies:weighted_block_group_state_provider",
+      "group": "nether_stones"
+    },
+    "core_radius": {
+      "min_inclusive": 2,
+      "max_exclusive": 4
+    },
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 5,
+      "max_exclusive": 15
+    },
+
+    "decorators": {
+      "starry_skies:mod_compat/cinderscapes/crystinium": 0.5,
+      "starry_skies:mod_compat/cinderscapes/polypite_sulfur_quartz": 0.25
+    },
+    "spawns": [],
+    "generation": {
+      "weight": 0.2,
+      "group": "starry_skies:nether/ores"
+    }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cinderscapes"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "type": "starry_skies:shell_core",
+  "config": {
+    "main_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:gold_block"
+      }
+    },
+    "core_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:netherite_block"
+      }
+    },
+    "core_radius": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 1,
+      "max_exclusive": 2
+    },
+    "shell_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:glowstone"
+      }
+    },
+    "shell_thickness": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 45,
+      "max_inclusive": 45
+    },
+
+    "size": {
+      "type": "minecraft:constant",
+      "value": 48
+    },
+
+    "decorators": {},
+    "spawns": [],
+    "generation": {
+      "weight": 0.1,
+      "group": "starry_skies:overworld/treasure"
+    }
+  }
+}

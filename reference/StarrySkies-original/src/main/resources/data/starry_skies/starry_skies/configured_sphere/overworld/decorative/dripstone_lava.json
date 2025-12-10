@@ -1,0 +1,33 @@
+{
+  "type": "starry_skies:shell",
+  "config": {
+    "main_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:lava"
+      }
+    },
+    "shell_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:dripstone_block"
+      }
+    },
+    "shell_thickness": 1,
+
+    "size": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 5,
+      "max_exclusive": 12
+    },
+
+    "decorators": {
+      "starry_skies:pointed_dripstone": 0.8
+    },
+    "spawns": [],
+    "generation": {
+      "weight": 0.4,
+      "group": "starry_skies:overworld/decorative"
+    }
+  }
+}
