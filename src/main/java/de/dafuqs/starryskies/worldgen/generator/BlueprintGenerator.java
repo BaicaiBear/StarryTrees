@@ -1,18 +1,25 @@
 package de.dafuqs.starryskies.worldgen.generator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.Stack;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.dafuqs.starryskies.StarrySkies;
 
+import de.dafuqs.starryskies.StarrySkies;
 import de.dafuqs.starryskies.worldgen.BlueprintManager;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.util.math.random.RandomSeed;
-import net.minecraft.util.Identifier;
-
-import java.util.*;
 
 public class BlueprintGenerator {
 
@@ -712,7 +719,7 @@ public class BlueprintGenerator {
         loadBiome("minecraft:crimson_forest", "crimson_forest.json", true, 0.4, 0.4, 0.0, 0.0, 0.0);
         loadBiome("minecraft:nether_wastes", "nether_wastes.json", true, 0.0, 0.0, 0.0, 0.0, 0.0);
         loadBiome("minecraft:soul_sand_valley", "soul_sand_valley.json", true, 0.0, 0.0, -0.5, -0.5, 0.0);
-        loadBiome("minecraft:warped_forest", "warped_forest.json", true, 0.0, 0.0, 0.5, 0.5, 0.175);
+        loadBiome("minecraft:warped_forest", "warped_forest.json", true, 0.0, 0.0, 0.5, 0.5, 0.375);
     }
 
     private static void loadBiome(String name, String filename, boolean isNether, double... params) {

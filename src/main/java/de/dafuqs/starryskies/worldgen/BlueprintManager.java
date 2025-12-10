@@ -1,16 +1,21 @@
 package de.dafuqs.starryskies.worldgen;
 
-import com.google.gson.*;
-import de.dafuqs.starryskies.StarrySkies;
-
-import net.minecraft.util.math.ChunkPos;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import de.dafuqs.starryskies.StarrySkies;
+import net.minecraft.util.math.ChunkPos;
 
 public class BlueprintManager {
 
@@ -82,6 +87,10 @@ public class BlueprintManager {
             // Save
             saveJson(bpPath, result.blueprint());
             saveJson(bgPath, result.bridges());
+
+            // Visualize
+            String vizName = bpMetaName.replace(".json", ".png");
+            BlueprintVisualizer.visualize(result.blueprint(), vizName, dir);
 
             // Load directly
             loadFromData(id, result.blueprint(), result.bridges());
