@@ -1,30 +1,55 @@
 package de.dafuqs.starryskies.worldgen.dimension;
 
-import com.mojang.serialization.*;
-import com.mojang.serialization.codecs.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import de.dafuqs.starryskies.StarrySkies;
-import de.dafuqs.starryskies.registries.*;
-import de.dafuqs.starryskies.worldgen.*;
-import net.minecraft.block.*;
+import de.dafuqs.starryskies.registries.StarryRegistryKeys;
+import de.dafuqs.starryskies.worldgen.BlueprintManager;
+import de.dafuqs.starryskies.worldgen.ConfiguredSphere;
+import de.dafuqs.starryskies.worldgen.PlacedSphere;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.entry.*;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.RandomSeed;
-import net.minecraft.world.*;
-import net.minecraft.world.biome.*;
-import net.minecraft.world.biome.source.*;
-import net.minecraft.world.chunk.*;
-import net.minecraft.world.gen.*;
-import net.minecraft.world.gen.chunk.*;
-import net.minecraft.world.gen.noise.*;
-import org.jetbrains.annotations.*;
-
-import java.util.*;
-import java.util.concurrent.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BrushableBlockEntity;
+import net.minecraft.loot.LootTables;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.loot.LootTable;
+import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.VerticalBlockSample;
+import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class StarrySkyChunkGenerator extends ChunkGenerator {
 
@@ -186,14 +211,19 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 					RegistryEntry<Biome> biomeEntry = this.biomeSource.getBiome(bX >> 2, yBlock >> 2, bZ >> 2,
 							noiseConfig.getMultiNoiseSampler());
 
+					// Determine if Overworld
+					boolean isOverworld = !this.blueprintId.getPath().contains("nether");
+
+					// Determine Snow Condition (Deterministic)
+					boolean trySnow = false;
+					if (isTop && isCold(biomeEntry)) {
+						long snowHash = MathHelper.hashCode(bX, yBlock, bZ);
+						trySnow = (snowHash & 15) < 8; // ~50% chance
+					}
+
 					// Place center and neighbors with mosaic/hole logic
 					// Center
-					Block centerBlock = getBridgeBlockState(biomeEntry, bX, yBlock, bZ);
-					if (centerBlock != null) {
-						BlockState state = centerBlock.getDefaultState().with(SlabBlock.TYPE,
-								isTop ? SlabType.TOP : SlabType.BOTTOM);
-						placeBridgeBlock(chunk, bX, yBlock, bZ, state);
-					}
+					placeBridgePart(chunk, bX, yBlock, bZ, isTop, biomeEntry, isOverworld, trySnow);
 
 					// Neighbors (Cross Shape)
 					// We must query biome/palette for each neighbor to get correct mosaic effect
@@ -203,43 +233,10 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 					for (int n = 0; n < 4; n++) {
 						int nx = bX + dx[n];
 						int nz = bZ + dz[n];
-						// Re-query biome for strict accuracy, or just reuse center biome
-						// (faster/cleaner).
-						// Let's reuse center biome for consistency of theme, but vary coordinates for
-						// noise.
-						Block nBlock = getBridgeBlockState(biomeEntry, nx, yBlock, nz);
-						if (nBlock != null) {
-							BlockState nState = nBlock.getDefaultState().with(SlabBlock.TYPE,
-									isTop ? SlabType.TOP : SlabType.BOTTOM);
-							placeBridgeBlock(chunk, nx, yBlock, nz, nState);
-						}
+						// Use helper
+						placeBridgePart(chunk, nx, yBlock, nz, isTop, biomeEntry, isOverworld, trySnow);
 					}
-
-					// Add Snow if Cold (Randomly)
-					if (isTop && isCold(biomeEntry)) {
-						// Deterministic random check based on position to avoid chunk border artifacts
-						// Simple hash: (x ^ z ^ y) mix
-						long hash = MathHelper.hashCode(bX, yBlock, bZ);
-						if ((hash & 15) < 8) { // ~50% chance
-							BlockState snow = Blocks.SNOW.getDefaultState();
-							// Place snow above bridge components ONLY if they exist
-							if (centerBlock != null)
-								placeSnowBlock(chunk, bX, yBlock + 1, bZ, snow);
-
-							for (int m = 0; m < 4; m++) {
-								int nx = bX + dx[m];
-								int nz = bZ + dz[m];
-								// We need to check if the neighbor exists. Technically we should re-calculate
-								// the hash or check the chunk.
-								// But checking the chunk read/write might be slow or complex if not placed yet.
-								// Better: Re-run the deterministic check (fast).
-								Block nBlock = getBridgeBlockState(biomeEntry, nx, yBlock, nz);
-								if (nBlock != null) {
-									placeSnowBlock(chunk, nx, yBlock + 1, nz, snow);
-								}
-							}
-						}
-					}
+					// Snow loop removed (handled inside placeBridgePart)
 				}
 			}
 		}
@@ -372,17 +369,100 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		return Blocks.STONE_BRICK_SLAB;
 	}
 
+	private boolean placeBridgePart(Chunk chunk, int x, int y, int z, boolean isTop, RegistryEntry<Biome> biomeEntry,
+			boolean isOverworld, boolean addSnow) {
+		long hash = MathHelper.hashCode(x, y, z);
+		boolean isSuspicious = isTop && isOverworld && Math.abs(hash % 100) == 3;
+
+		if (isSuspicious) {
+			// Suspicious Block Logic - NO SNOW
+			Block susBlock = Blocks.SUSPICIOUS_GRAVEL;
+			RegistryKey<LootTable> lootTableId = LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY;
+
+			if (biomeEntry.matchesKey(BiomeKeys.DESERT) || biomeEntry.matchesKey(BiomeKeys.WARM_OCEAN)) {
+				susBlock = Blocks.SUSPICIOUS_SAND;
+				lootTableId = LootTables.DESERT_WELL_ARCHAEOLOGY;
+			}
+			// Place Suspicious Block (Full Block) which aligns with Top Slab surface
+			placeBridgeBlock(chunk, x, y, z, susBlock.getDefaultState(), lootTableId);
+
+			// Place Support Slab (Top Slab at y-1) to support the Falling Block
+			Block supportBlock = getBridgeBlockState(biomeEntry, x, y, z);
+			if (supportBlock != null) {
+				placeBridgeBlock(chunk, x, y - 1, z,
+						supportBlock.getDefaultState().with(SlabBlock.TYPE, SlabType.TOP));
+			}
+
+			// Clean above (ensure no slab covers it)
+			placeBridgeBlock(chunk, x, y + 1, z, Blocks.AIR.getDefaultState());
+
+		} else {
+			// Normal Logic
+			Block block = getBridgeBlockState(biomeEntry, x, y, z);
+			if (block != null) {
+				BlockState state = block.getDefaultState().with(SlabBlock.TYPE, isTop ? SlabType.TOP : SlabType.BOTTOM);
+				placeBridgeBlock(chunk, x, y, z, state);
+			} else {
+				// No block placed, so no snow
+				return false;
+			}
+		}
+
+		// Snow Logic (Applies to both)
+		if (addSnow && isTop) {
+			BlockPos pos = new BlockPos(x, y, z);
+			BlockState current = chunk.getBlockState(pos);
+
+			// Verify support conditions:
+			// 1. Is a Full Block (like Suspicious Sand/Gravel) -> supports snow
+			// 2. Is a Slab with TYPE=TOP -> supports snow
+			// 3. (Implicitly) Is not Air
+			boolean supportsSnow = false;
+			if (current.getBlock() == Blocks.SUSPICIOUS_SAND || current.getBlock() == Blocks.SUSPICIOUS_GRAVEL) {
+				supportsSnow = true;
+			} else if (current.contains(SlabBlock.TYPE)) {
+				if (current.get(SlabBlock.TYPE) == SlabType.TOP) {
+					supportsSnow = true;
+				}
+			} else if (!current.isAir()) {
+				// Assume other solid blocks (full blocks) support snow
+				supportsSnow = true;
+			}
+
+			if (supportsSnow) {
+				placeSnowBlock(chunk, x, y + 1, z, Blocks.SNOW.getDefaultState());
+			}
+		}
+		return true;
+	}
+
 	private boolean isCold(RegistryEntry<Biome> biomeEntry) {
 		return biomeEntry.value().getTemperature() < 0.15f;
 	}
 
 	private void placeBridgeBlock(Chunk chunk, int x, int y, int z, BlockState state) {
-		if (chunk.getPos().getStartX() <= x && chunk.getPos().getEndX() >= x &&
-				chunk.getPos().getStartZ() <= z && chunk.getPos().getEndZ() >= z &&
-				y >= chunk.getBottomY() && y < (chunk.getBottomY() + chunk.getHeight())) {
+		placeBridgeBlock(chunk, x, y, z, state, null);
+	}
+
+	private void placeBridgeBlock(Chunk chunk, int x, int y, int z, BlockState state,
+			RegistryKey<LootTable> lootTableId) {
+		if (chunk.getPos().getStartX() <= x && chunk.getPos().getEndX() >= x && chunk.getPos().getStartZ() <= z
+				&& chunk.getPos().getEndZ() >= z && y >= chunk.getBottomY()
+				&& y < (chunk.getBottomY() + chunk.getHeight())) {
 
 			BlockPos pos = new BlockPos(x, y, z);
 			chunk.setBlockState(pos, state, 0);
+
+			if (lootTableId != null) {
+				BlockEntity blockEntity = chunk.getBlockEntity(pos);
+				if (blockEntity == null) {
+					blockEntity = new BrushableBlockEntity(pos, state);
+					chunk.setBlockEntity(blockEntity);
+				}
+				if (blockEntity instanceof BrushableBlockEntity brushableBlockEntity) {
+					brushableBlockEntity.setLootTable(lootTableId, pos.asLong());
+				}
+			}
 		}
 	}
 
