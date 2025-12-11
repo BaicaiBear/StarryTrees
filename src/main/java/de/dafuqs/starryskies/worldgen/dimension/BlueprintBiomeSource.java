@@ -62,14 +62,6 @@ public class BlueprintBiomeSource extends BiomeSource {
                 biomeId = Identifier.of("minecraft", biomeIdStr);
             }
 
-            // Debug Log: Check biome assignment at world origin
-            if (blockX >= -40 && blockX <= 40 && blockZ >= -40 && blockZ <= 40 && y == 64
-                    && (blockX + blockZ) % 20 == 0) {
-                System.out.println("BlueprintBiomeSource: At Block " + blockX + "," + blockZ + " (Quartile " + x + ","
-                        + z + ") nearest node is " + node.type
-                        + " (Biome: " + node.biome + ") -> Resolved: " + biomeId);
-            }
-
             if (this.biomeRegistry.getOptional(RegistryKey.of(RegistryKeys.BIOME, biomeId)).isPresent()) {
                 return this.biomeRegistry.getOrThrow(RegistryKey.of(RegistryKeys.BIOME, biomeId));
             } else {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "starry_skies",
-  "version": "${mod_version}",
+  "version": "${version}",
   "name": "Starry Trees",
   "description": "An implementation of the planetoids world gen for fabric modified by BaicaiBear",
   "authors": [

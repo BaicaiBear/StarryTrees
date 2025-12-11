@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.Sets;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -25,7 +23,6 @@ import net.minecraft.block.enums.SlabType;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BrushableBlockEntity;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -321,7 +318,7 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 
 					if (targetPos.getX() >= chunkMinX && targetPos.getX() <= chunkMaxX && targetPos.getZ() >= chunkMinZ
 							&& targetPos.getZ() <= chunkMaxZ) {
-						if (!chunk.getBlockState(targetPos).contains(SlabBlock.TYPE)) {
+						if (!world.getBlockState(targetPos).contains(SlabBlock.TYPE)) {
 							// Target is bad. Scan.
 							boolean found = false;
 							for (int offset = 1; offset < 20; offset++) {
@@ -339,7 +336,7 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 
 									if (posC.getX() >= chunkMinX && posC.getX() <= chunkMaxX && posC.getZ() >= chunkMinZ
 											&& posC.getZ() <= chunkMaxZ) {
-										if (chunk.getBlockState(posC).contains(SlabBlock.TYPE)) {
+										if (world.getBlockState(posC).contains(SlabBlock.TYPE)) {
 											finalLoreStep = candidate;
 											finalLorePos = posC;
 											found = true;
@@ -375,7 +372,7 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 						continue;
 
 					BlockPos pos = new BlockPos(bX, yBlock, bZ);
-					BlockState currentState = chunk.getBlockState(pos);
+					BlockState currentState = world.getBlockState(pos);
 
 					// DECORATION PHASE: Only modify existing slabs
 					// Note: Suspicious Sand/Gravel does NOT have SlabBlock.TYPE, so they are safe
@@ -396,26 +393,20 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 
 							// PLACE SUPPORT for gravity block
 							// User requested "top-state of bridge material slab"
-							placeSupport(chunk, pos, biomeEntry, bottomY, topY);
+							placeSupport(world, pos, biomeEntry, bottomY, topY);
 
 							// Place Sus Block
-							chunk.setBlockState(pos, susState, 0);
+							world.setBlockState(pos, susState, 3);
 
-							// Set Block Entity
-							BlockEntity existing = chunk.getBlockEntity(pos);
-							if (existing != null)
-								chunk.removeBlockEntity(pos);
-
-							BrushableBlockEntity be = new BrushableBlockEntity(pos, susState);
-							be.setLootTable(storyLoot, pos.asLong());
-
-							if (be.getType().supports(susState)) {
-								chunk.setBlockEntity(be);
+							// Configure Block Entity
+							BlockEntity be = world.getBlockEntity(pos);
+							if (be instanceof BrushableBlockEntity brushableBe) {
+								brushableBe.setLootTable(storyLoot, pos.asLong());
 							}
 
 							// Clean above
 							if (yBlock + 1 < topY) {
-								chunk.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 0);
+								world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 0);
 							}
 							continue; // Skip hole/snow
 						}
@@ -424,7 +415,7 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 						// PROTECT STORY LORE: Do not make a hole if this is the target story pos
 						boolean isStoryPos = (finalLorePos != null && pos.equals(finalLorePos));
 						if (!isStoryPos && Math.abs(hash % 100) < 6) {
-							chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), 0);
+							world.setBlockState(pos, Blocks.AIR.getDefaultState(), 0);
 							continue;
 						}
 
@@ -434,8 +425,8 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 							if (isCold(biomeEntry)) {
 								if ((hash & 15) < 14) {
 									if (yBlock + 1 < topY) {
-										if (chunk.getBlockState(pos.up()).isAir()) {
-											chunk.setBlockState(pos.up(), Blocks.SNOW.getDefaultState(), 0);
+										if (world.getBlockState(pos.up()).isAir()) {
+											world.setBlockState(pos.up(), Blocks.SNOW.getDefaultState(), 0);
 										}
 									}
 								}
@@ -447,7 +438,8 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		}
 	}
 
-	private void placeSupport(Chunk chunk, BlockPos pos, RegistryEntry<Biome> biome, int bottomY, int topY) {
+	private void placeSupport(StructureWorldAccess world, BlockPos pos, RegistryEntry<Biome> biome, int bottomY,
+			int topY) {
 		BlockPos supportPos = pos.down();
 		if (supportPos.getY() < bottomY || supportPos.getY() >= topY)
 			return;
@@ -456,7 +448,7 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		Block bridgeMaterial = getBridgeBlockState(biome, pos.getX(), pos.getY(), pos.getZ());
 		if (bridgeMaterial != null) {
 			BlockState supportState = bridgeMaterial.getDefaultState().with(SlabBlock.TYPE, SlabType.TOP);
-			chunk.setBlockState(supportPos, supportState, 0);
+			world.setBlockState(supportPos, supportState, 0);
 		}
 	}
 

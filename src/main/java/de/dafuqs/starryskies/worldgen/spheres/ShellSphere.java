@@ -80,11 +80,6 @@ public class ShellSphere<SC extends ShellSphere.Config> extends Sphere<SC> {
 			int chunkX = chunk.getPos().x;
 			int chunkZ = chunk.getPos().z;
 
-			// Debug: Confirm generation started
-			if (chunkX >= -2 && chunkX <= 2 && chunkZ >= -2 && chunkZ <= 2) {
-				System.out.println("      -> ShellSphere.Placed.generate running for chunk " + chunk.getPos());
-			}
-
 			random.setSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
 			BlockPos spherePos = this.getPosition();
 			int x = spherePos.getX();
@@ -95,7 +90,6 @@ public class ShellSphere<SC extends ShellSphere.Config> extends Sphere<SC> {
 			int maxX = Math.min(chunkX * 16 + 15, x + ceiledRadius);
 			int maxZ = Math.min(chunkZ * 16 + 15, z + ceiledRadius);
 
-			boolean placedAny = false;
 			BlockPos.Mutable currBlockPos = new BlockPos.Mutable();
 
 			for (int x2 = Math.max(chunkX * 16, x - ceiledRadius); x2 <= maxX; x2++) {
@@ -109,17 +103,11 @@ public class ShellSphere<SC extends ShellSphere.Config> extends Sphere<SC> {
 
 						if (d <= (this.radius - this.shellRadius)) {
 							chunk.setBlockState(currBlockPos, this.innerBlock.get(random, currBlockPos));
-							placedAny = true;
 						} else {
 							chunk.setBlockState(currBlockPos, this.shellBlock.get(random, currBlockPos));
-							placedAny = true;
 						}
 					}
 				}
-			}
-
-			if (placedAny && chunkX >= -2 && chunkX <= 2 && chunkZ >= -2 && chunkZ <= 2) {
-				System.out.println("      -> ShellSphere placed blocks in chunk " + chunk.getPos());
 			}
 		}
 
