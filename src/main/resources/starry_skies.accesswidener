@@ -3,5 +3,7 @@ accessWidener v1 named
 accessible method net/minecraft/world/gen/stateprovider/BlockStateProvider getType ()Lnet/minecraft/world/gen/stateprovider/BlockStateProviderType;
 accessible method net/minecraft/command/argument/ArgumentTypes register (Lnet/minecraft/registry/Registry;Ljava/lang/String;Ljava/lang/Class;Lnet/minecraft/command/argument/serialize/ArgumentSerializer;)Lnet/minecraft/command/argument/serialize/ArgumentSerializer;
 accessible method net/minecraft/item/map/MapState addDecoration (Lnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/world/WorldAccess;Ljava/lang/String;DDDLnet/minecraft/text/Text;)V
+accessible class net/minecraft/item/map/MapState
 accessible field net/minecraft/village/TradeOffers PROFESSION_TO_LEVELED_TRADE Ljava/util/Map;
 accessible class net/minecraft/village/TradeOffers$SellMapFactory
+accessible field net/minecraft/block/entity/BrushableBlockEntity lootTable Lnet/minecraft/util/Identifier;

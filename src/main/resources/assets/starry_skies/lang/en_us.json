@@ -231,5 +231,6 @@
   "advancements.starry_skies.sphere_end_stone.description": "Find your first end stone sphere",
   "item.starry_skies.story_map.beginning": "Starchart: Origins",
   "item.starry_skies.story_map.middle": "Starchart: The Journey",
-  "item.starry_skies.story_map.finale": "Starchart: Terminus"
+  "item.starry_skies.story_map.finale": "Starchart: Terminus",
+  "text.starry_skies.story_block.break_warning": "Hold Shift to break this story block!"
 }

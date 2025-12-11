@@ -7,6 +7,9 @@ import de.dafuqs.starryskies.worldgen.*;
 import de.dafuqs.starryskies.worldgen.dimension.*;
 import it.unimi.dsi.fastutil.objects.*;
 import java.util.*;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.block.entity.BrushableBlockEntity;
+import net.minecraft.text.Text;
 import net.fabricmc.api.*;
 import net.fabricmc.fabric.api.event.lifecycle.v1.*;
 import net.fabricmc.fabric.api.resource.*;
@@ -55,6 +58,36 @@ public class StarrySkies implements ModInitializer {
 		StarryFeatures.initialize();
 		SphereDecorators.initialize();
 		StarryTrades.register();
+
+		// Protect Story Blocks
+		PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
+			if (blockEntity instanceof BrushableBlockEntity brushable && !player.isSneaking()) {
+				try {
+					// Robust Break Protection: Scan ALL fields for the Story Block Loot Table value
+					boolean isStoryBlock = false;
+					for (java.lang.reflect.Field f : BrushableBlockEntity.class.getDeclaredFields()) {
+						f.setAccessible(true);
+						try {
+							Object val = f.get(brushable);
+							if (val != null && val.toString().contains("starryskies:chests/lore/")) {
+								isStoryBlock = true;
+								break;
+							}
+						} catch (Exception ignored) {
+						}
+					}
+
+					if (isStoryBlock) {
+						player.sendMessage(Text.translatable("text.starry_skies.story_block.break_warning"), true);
+						return false;
+					}
+				} catch (Exception e) {
+					// ignore
+					e.printStackTrace();
+				}
+			}
+			return true;
+		});
 
 		// Initialize BlueprintManager on server start to use world seed
 		/*

@@ -96,7 +96,7 @@ public class StarryTrades {
                 MapState mapState = FilledMapItem.getMapState(mapStack, serverWorld);
                 if (mapState != null) {
                     mapState.addDecoration(MapDecorationTypes.RED_X, serverWorld, "+", targetPos.getX(),
-                            targetPos.getZ(), 180.0, Text.literal("+"));
+                            targetPos.getZ(), 180.0, null);
                 }
 
                 mapStack.set(DataComponentTypes.ITEM_NAME,

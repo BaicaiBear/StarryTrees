@@ -231,5 +231,6 @@
   "advancements.starry_skies.sphere_end_stone.description": "第一次踏足于末地石星球",
   "item.starry_skies.story_map.beginning": "故事之起源",
   "item.starry_skies.story_map.middle": "故事之征途",
-  "item.starry_skies.story_map.finale": "故事之终焉"
+  "item.starry_skies.story_map.finale": "故事之终焉",
+  "text.starry_skies.story_block.break_warning": "按住 Shift 键以破坏此故事方块！"
 }

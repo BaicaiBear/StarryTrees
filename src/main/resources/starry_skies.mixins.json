@@ -2,7 +2,9 @@
   "required": true,
   "package": "de.dafuqs.starryskies.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "BrushableBlockEntityMixin"
+  ],
   "client": [],
   "injectors": {
     "defaultRequire": 1
