@@ -2,13 +2,11 @@
   "biome.starry_skies.overworld": "繁星浩空",
   "biome.starry_skies.nether": "异星惊空",
   "biome.starry_skies.end": "贵星深空",
-
   "text.autoconfig.StarrySky.title": "繁星世界配置文件",
   "text.autoconfig.StarrySky.category.GENERAL": "总配置",
   "text.autoconfig.StarrySky.category.SYSTEM GENERATION": "星球生成系统配置",
   "text.autoconfig.StarrySky.category.WORLD FLOOR GENERATION": "世界基底方块配置",
   "text.autoconfig.StarrySky.category.SPHERES": "可选的星球配置",
-
   "text.autoconfig.StarrySky.option.registerStarryPortal": "注册繁星世界传送门",
   "text.autoconfig.StarrySky.option.starrySkyPortalFrameBlock.@PrefixText": "设置通往繁星世界传送门框架方块，该传送门的激活方式与原版通往下界的传送门一致，需要打火石激活。",
   "text.autoconfig.StarrySky.option.starrySkyPortalFrameBlock": "繁星世界传送门框架方块",
@@ -19,22 +17,18 @@
   "text.autoconfig.StarrySky.option.rainbowSkybox": "繁星世界中的繁星浩空维度的天空使用华丽的彩虹天空颜色，而不是原版的天空颜色",
   "text.autoconfig.StarrySky.option.enableNetherPortalsToStarryNether": "本选项设置为 “是” 时，繁星浩空维度的下界传送门会传送到 “异星惊空” 维度，设置为 “否” 时，则下界传送门不会形成。",
   "text.autoconfig.StarrySky.option.enableEndPortalsToStarryEnd": "本选项设置为 “是” 时，繁星浩空维度的末地传送门会传送到 “贵星深空” 维度，设置为 “否” 时，则激活的末地传送门会传送至原版末地维度。",
-
   "text.autoconfig.StarrySky.option.systemSizeChunks.@PrefixText": "球体以星系为单位生成。每个星系由 x 个球体组成，分布在 y 个区块中。每个星系的区块大小²。生成值越高，星系边界处细微的 “间隙” 就越少，但由于星系是一次性生成的，因此高的值可能会导致每次生成新星系时都出现轻微的卡顿（但总体卡顿会降低）。",
   "text.autoconfig.StarrySky.option.systemSizeChunks.@Tooltip": "区块中应该生成星系有多大²",
   "text.autoconfig.StarrySky.option.systemSizeChunks": "区块中生成星系的大小",
-
   "commands.starry_skies.locate.sphere.success": "最近的星球 %s 在 %s （%s 个方块外）",
   "commands.starry_skies.locate.sphere.noop": "无法在附近找到星球",
   "commands.starry_skies.locate.sphere.not_found": "无法在附近找到 “%s” 类型的星球",
-
   "advancements.starry_skies.starry_skies.title": "繁星浩空",
   "advancements.starry_skies.starry_skies.description": "星际穿越",
   "advancements.starry_skies.starry_skies_nether.title": "异星惊空",
   "advancements.starry_skies.starry_skies_nether.description": "惊星动魄",
   "advancements.starry_skies.starry_skies_end.title": "贵星深空",
   "advancements.starry_skies.starry_skies_end.description": "空鸣星稀",
-
   "advancements.starry_skies.group_structures.title": "结构行星",
   "advancements.starry_skies.group_structures.description": "第一次踏足于包含结构的星球",
   "advancements.starry_skies.group_fluids.title": "流体行星",
@@ -57,14 +51,12 @@
   "advancements.starry_skies.group_stones.description": "第一次踏足于由岩质方块构成的星球",
   "advancements.starry_skies.group_secret.title": "秘密奇星",
   "advancements.starry_skies.group_secret.description": "第一次踏足于充满秘密的星球",
-
   "advancements.starry_skies.sphere_stronghold.title": "要塞秘星",
   "advancements.starry_skies.sphere_stronghold.description": "第一次踏足于包含要塞的星球",
   "advancements.starry_skies.sphere_nether_fortress.title": "下界要塞异星",
   "advancements.starry_skies.sphere_nether_fortress.description": "第一次踏足于包含下界要塞的星球",
   "advancements.starry_skies.sphere_end_city.title": "末地城奇星",
   "advancements.starry_skies.sphere_end_city.description": "第一次踏足于包含末地城的星球",
-
   "advancements.starry_skies.sphere_beach.title": "沙滩行星",
   "advancements.starry_skies.sphere_beach.description": "第一次踏足于沙滩星球",
   "advancements.starry_skies.sphere_tuff.title": "凝灰行星",
@@ -201,7 +193,6 @@
   "advancements.starry_skies.sphere_ocean_monument.description": "第一次踏足于包含海洋神殿的星球",
   "advancements.starry_skies.sphere_end_glass.title": "末地玻璃星",
   "advancements.starry_skies.sphere_end_glass.description": "在贵星深空维度中，第一次踏足于玻璃星球",
-
   "advancements.starry_skies.sphere_dripstone.title": "钟乳石星",
   "advancements.starry_skies.sphere_dripstone.description": "第一次踏足于滴水石块星球",
   "advancements.starry_skies.sphere_ancient_debris.title": "楼兰古星",
@@ -232,12 +223,13 @@
   "advancements.starry_skies.sphere_crimson_wood.description": "第一次踏足于绯红菌星球",
   "advancements.starry_skies.sphere_warped_wood.title": "诡异行星",
   "advancements.starry_skies.sphere_warped_wood.description": "第一次踏足于诡异菌星球",
-
   "advancements.starry_skies.sphere_end_dungeon.title": "末地地牢之星",
   "advancements.starry_skies.sphere_end_dungeon.description": "在贵星深空维度中，第一次踏足于包含地牢的星球",
   "advancements.starry_skies.sphere_end_gateway.title": "归途",
   "advancements.starry_skies.sphere_end_gateway.description": "第一次踏足于包含末地折跃门星球",
   "advancements.starry_skies.sphere_end_stone.title": "终末奇星",
-  "advancements.starry_skies.sphere_end_stone.description": "第一次踏足于末地石星球"
-
+  "advancements.starry_skies.sphere_end_stone.description": "第一次踏足于末地石星球",
+  "item.starry_skies.story_map.beginning": "故事之起源",
+  "item.starry_skies.story_map.middle": "故事之征途",
+  "item.starry_skies.story_map.finale": "故事之终焉"
 }

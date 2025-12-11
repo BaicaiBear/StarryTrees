@@ -233,6 +233,43 @@ public class BlueprintManager {
         return index.getOrDefault(key, Collections.emptyList());
     }
 
+    public net.minecraft.util.math.BlockPos getNearestStoryPos(net.minecraft.util.Identifier id, int targetPart,
+            net.minecraft.util.math.BlockPos center) {
+        BridgeData data = bridges.get(id);
+        if (data == null || data.story == null || data.story.isEmpty())
+            return null;
+
+        double bestDistSq = Double.MAX_VALUE;
+        net.minecraft.util.math.BlockPos bestPos = null;
+
+        for (Map.Entry<String, int[]> entry : data.story.entrySet()) {
+            if (entry.getValue()[1] == targetPart) {
+                // Parse key: "x1_y1_z1_x2_y2_z2"
+                String[] parts = entry.getKey().split("_");
+                if (parts.length == 6) {
+                    try {
+                        int x1 = Integer.parseInt(parts[0]);
+                        int z1 = Integer.parseInt(parts[2]);
+                        int x2 = Integer.parseInt(parts[3]);
+                        int z2 = Integer.parseInt(parts[5]);
+
+                        int mx = (x1 + x2) / 2;
+                        int mz = (z1 + z2) / 2;
+
+                        double d = (mx - center.getX()) * (mx - center.getX())
+                                + (mz - center.getZ()) * (mz - center.getZ());
+                        if (d < bestDistSq) {
+                            bestDistSq = d;
+                            bestPos = new net.minecraft.util.math.BlockPos(mx, 100, mz);
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+        }
+        return bestPos;
+    }
+
     // Data Classes
     public static class BlueprintData {
         public Metadata metadata;

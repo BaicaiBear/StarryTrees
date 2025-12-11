@@ -54,6 +54,7 @@ public class StarrySkies implements ModInitializer {
 		Spheres.initialize();
 		StarryFeatures.initialize();
 		SphereDecorators.initialize();
+		StarryTrades.register();
 
 		// Initialize BlueprintManager on server start to use world seed
 		/*
