@@ -1,0 +1,32 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "minecraft:written_book_content": {
+                  "author": "BaicaiBear",
+                  "pages": [
+                    {
+                      "text": "In the beginning, there was only the void."
+                    },
+                    {
+                      "text": "Then, the first tree took root in the starlight."
+                    }
+                  ],
+                  "title": "Ch 1: The Awakening"
+                }
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "minecraft:written_book"
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

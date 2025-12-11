@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "starry_skies",
-  "version": "MT1.1",
+  "version": "${mod_version}",
   "name": "Starry Trees",
   "description": "An implementation of the planetoids world gen for fabric modified by BaicaiBear",
   "authors": [
@@ -18,6 +18,9 @@
   "entrypoints": {
     "main": [
       "de.dafuqs.starryskies.StarrySkies"
+    ],
+    "fabric-datagen": [
+      "de.dafuqs.starryskies.datagen.StarrySkiesDataGenerator"
     ]
   },
   "mixins": [

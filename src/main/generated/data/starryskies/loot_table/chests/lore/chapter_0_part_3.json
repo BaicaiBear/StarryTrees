@@ -1,0 +1,32 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "minecraft:written_book_content": {
+                  "author": "BaicaiBear",
+                  "pages": [
+                    {
+                      "text": "But a shadow lurked beneath the branches."
+                    },
+                    {
+                      "text": "It envied the light above."
+                    }
+                  ],
+                  "title": "Ch 1: The Awakening"
+                }
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "minecraft:written_book"
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

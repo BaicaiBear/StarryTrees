@@ -1,11 +1,14 @@
 package de.dafuqs.starryskies.worldgen.dimension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.Sets;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -19,7 +22,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.SlabType;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BrushableBlockEntity;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -28,13 +37,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.RandomSeed;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BrushableBlockEntity;
-import net.minecraft.loot.LootTables;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.loot.LootTable;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -84,10 +86,9 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 	public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess,
 			StructureAccessor structureAccessor, Chunk chunk) {
 
-		// 1. Generate Bridges
-		generateBridges(chunk, chunkRegion, noiseConfig);
+		// 1. Generate Bridges (Structure Phase)
+		carveBridges(chunk, chunkRegion, noiseConfig);
 
-		// 2. Generate Spheres
 		// 2. Generate Spheres
 		List<BlueprintManager.BlueprintNode> nodes = BlueprintManager.get().getSpheresInChunk(this.blueprintId,
 				chunk.getPos());
@@ -135,7 +136,7 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		}
 	}
 
-	private void generateBridges(Chunk chunk, ChunkRegion chunkRegion, NoiseConfig noiseConfig) {
+	private void carveBridges(Chunk chunk, ChunkRegion chunkRegion, NoiseConfig noiseConfig) {
 		ChunkPos chunkPos = chunk.getPos();
 		int chunkMinX = chunkPos.getStartX();
 		int chunkMaxX = chunkPos.getEndX();
@@ -211,44 +212,258 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 					RegistryEntry<Biome> biomeEntry = this.biomeSource.getBiome(bX >> 2, yBlock >> 2, bZ >> 2,
 							noiseConfig.getMultiNoiseSampler());
 
-					// Determine if Overworld
-					boolean isOverworld = !this.blueprintId.getPath().contains("nether");
-
-					// Determine Snow Condition (Deterministic)
-					boolean trySnow = false;
-					if (isTop && isCold(biomeEntry)) {
-						long snowHash = MathHelper.hashCode(bX, yBlock, bZ);
-						trySnow = (snowHash & 15) < 8; // ~50% chance
-					}
-
-					// Place center and neighbors with mosaic/hole logic
+					// Standard structural generation
 					// Center
-					placeBridgePart(chunk, bX, yBlock, bZ, isTop, biomeEntry, isOverworld, trySnow);
+					placeBridgeBlock(chunk, bX, yBlock, bZ, isTop, biomeEntry);
 
 					// Neighbors (Cross Shape)
-					// We must query biome/palette for each neighbor to get correct mosaic effect
 					int[] dx = { 1, -1, 0, 0 };
 					int[] dz = { 0, 0, 1, -1 };
 
 					for (int n = 0; n < 4; n++) {
 						int nx = bX + dx[n];
 						int nz = bZ + dz[n];
-						// Use helper
-						placeBridgePart(chunk, nx, yBlock, nz, isTop, biomeEntry, isOverworld, trySnow);
+						placeBridgeBlock(chunk, nx, yBlock, nz, isTop, biomeEntry);
 					}
-					// Snow loop removed (handled inside placeBridgePart)
 				}
 			}
 		}
 	}
 
-	private Block getBridgeBlockState(RegistryEntry<Biome> biomeEntry, int x, int y, int z) {
-		// 1. Hole Logic (3% Global Chance)
-		long hash = MathHelper.hashCode(x, y, z);
-		if (Math.abs(hash % 100) < 3) {
-			return null; // Hole
-		}
+	private void decorateBridges(StructureWorldAccess world, Chunk chunk) {
+		ChunkPos chunkPos = chunk.getPos();
+		int chunkMinX = chunkPos.getStartX();
+		int chunkMaxX = chunkPos.getEndX();
+		int chunkMinZ = chunkPos.getStartZ();
+		int chunkMaxZ = chunkPos.getEndZ();
+		int bottomY = chunk.getBottomY();
+		int topY = chunk.getTopYInclusive();
 
+		List<BlueprintManager.Edge> bridges = BlueprintManager.get().getBridgesInRegion(this.blueprintId,
+				chunkPos.getCenterX(),
+				chunkPos.getCenterZ());
+
+		if (bridges == null || bridges.isEmpty())
+			return;
+
+		double A_BASE = 50.0;
+
+		for (BlueprintManager.Edge bridge : bridges) {
+
+			int[] start = bridge.getStart();
+			int[] end = bridge.getEnd();
+
+			// AABB Check
+			int minBX = Math.min(start[0], end[0]);
+			int maxBX = Math.max(start[0], end[0]);
+			int minBZ = Math.min(start[2], end[2]);
+			int maxBZ = Math.max(start[2], end[2]);
+
+			if (maxBX < chunkMinX || minBX > chunkMaxX || maxBZ < chunkMinZ || minBZ > chunkMaxZ)
+				continue;
+
+			double dX = end[0] - start[0];
+			double dZ = end[2] - start[2];
+			double dist2D = Math.sqrt(dX * dX + dZ * dZ);
+			if (dist2D < 1.0)
+				continue;
+
+			double y1 = start[1];
+			double y2 = end[1];
+			double A = Math.max(A_BASE, dist2D / 0.9);
+			double p = solveCatenaryShift(dist2D, y2 - y1, A);
+			double k = y1 - A * Math.cosh(-p / A);
+			int steps = (int) Math.ceil(dist2D * 1.5);
+
+			// Lore Logic: Find Target Step
+			int targetStep = -1;
+			RegistryKey<LootTable> storyLoot = null;
+			int finalLoreStep = -1;
+			BlockPos finalLorePos = null;
+
+			if (bridge.story != null) {
+				List<Integer> candidates = new ArrayList<>();
+				for (int i = 0; i <= steps; i++) {
+					double t = i / (double) steps;
+					double currentDist = t * dist2D;
+					double yRaw = A * Math.cosh((currentDist - p) / A) + k;
+					double yRounded = Math.round(yRaw * 2) / 2.0;
+					int yBlock = (int) Math.floor(yRounded);
+					boolean isTop = (yRounded - yBlock) > 0.25;
+					if (isTop)
+						candidates.add(i);
+				}
+
+				if (!candidates.isEmpty()) {
+					long hashA = MathHelper.hashCode(start[0], start[1], start[2]);
+					long hashB = MathHelper.hashCode(end[0], end[1], end[2]);
+					long bridgeHash = hashA ^ hashB;
+					int index = Math.abs((int) (bridgeHash % candidates.size()));
+					targetStep = candidates.get(index);
+
+					Identifier id = Identifier.of("starryskies",
+							"chests/lore/chapter_" + bridge.story[0] + "_part_" + bridge.story[1]);
+					storyLoot = RegistryKey.of(RegistryKeys.LOOT_TABLE, id);
+				}
+
+				// Smart Fallback for Lore Spot
+				if (targetStep != -1) {
+					finalLoreStep = targetStep; // default
+
+					// Check validity of original target
+					double t = targetStep / (double) steps;
+					BlockPos targetPos = new BlockPos(
+							(int) Math.round(start[0] + t * dX),
+							(int) Math.floor(Math.round((A * Math.cosh((t * dist2D - p) / A) + k) * 2) / 2.0),
+							(int) Math.round(start[2] + t * dZ));
+
+					finalLorePos = targetPos; // Initial guess
+
+					if (targetPos.getX() >= chunkMinX && targetPos.getX() <= chunkMaxX && targetPos.getZ() >= chunkMinZ
+							&& targetPos.getZ() <= chunkMaxZ) {
+						if (!chunk.getBlockState(targetPos).contains(SlabBlock.TYPE)) {
+							// Target is bad. Scan.
+							boolean found = false;
+							for (int offset = 1; offset < 20; offset++) {
+								for (int sign = -1; sign <= 1; sign += 2) {
+									int candidate = targetStep + (offset * sign);
+									if (candidate < 0 || candidate > steps)
+										continue;
+									// Check candidate
+									double tC = candidate / (double) steps;
+									BlockPos posC = new BlockPos(
+											(int) Math.round(start[0] + tC * dX),
+											(int) Math.floor(
+													Math.round((A * Math.cosh((tC * dist2D - p) / A) + k) * 2) / 2.0),
+											(int) Math.round(start[2] + tC * dZ));
+
+									if (posC.getX() >= chunkMinX && posC.getX() <= chunkMaxX && posC.getZ() >= chunkMinZ
+											&& posC.getZ() <= chunkMaxZ) {
+										if (chunk.getBlockState(posC).contains(SlabBlock.TYPE)) {
+											finalLoreStep = candidate;
+											finalLorePos = posC;
+											found = true;
+											break;
+										}
+									}
+								}
+								if (found)
+									break;
+							}
+						}
+					}
+				}
+			}
+
+			for (int i = 0; i <= steps; i++) {
+				double t = i / (double) steps;
+				double worldX = start[0] + t * dX;
+				double worldZ = start[2] + t * dZ;
+
+				int bX = (int) Math.round(worldX);
+				int bZ = (int) Math.round(worldZ);
+
+				// STRICT Check: block is in current chunk
+				if (bX >= chunkMinX && bX <= chunkMaxX && bZ >= chunkMinZ && bZ <= chunkMaxZ) {
+					double currentDist = t * dist2D;
+					double yRaw = A * Math.cosh((currentDist - p) / A) + k;
+					double yRounded = Math.round(yRaw * 2) / 2.0;
+					int yBlock = (int) Math.floor(yRounded);
+					boolean isTop = (yRounded - yBlock) > 0.25;
+
+					if (yBlock < bottomY || yBlock >= topY)
+						continue;
+
+					BlockPos pos = new BlockPos(bX, yBlock, bZ);
+					BlockState currentState = chunk.getBlockState(pos);
+
+					// DECORATION PHASE: Only modify existing slabs
+					// Note: Suspicious Sand/Gravel does NOT have SlabBlock.TYPE, so they are safe
+					// from modification
+					if (currentState.contains(SlabBlock.TYPE)) {
+
+						long hash = MathHelper.hashCode(bX, yBlock, bZ);
+
+						// 1. Lore (Suspicious Blocks)
+						if (i == finalLoreStep && storyLoot != null) {
+							// Apply Lore if selected
+							RegistryEntry<Biome> biomeEntry = world.getBiome(pos);
+							boolean isDesert = biomeEntry.matchesKey(BiomeKeys.DESERT)
+									|| biomeEntry.matchesKey(BiomeKeys.WARM_OCEAN);
+							Block susBlock = isDesert ? Blocks.SUSPICIOUS_SAND : Blocks.SUSPICIOUS_GRAVEL;
+
+							BlockState susState = susBlock.getDefaultState();
+
+							// PLACE SUPPORT for gravity block
+							// User requested "top-state of bridge material slab"
+							placeSupport(chunk, pos, biomeEntry, bottomY, topY);
+
+							// Place Sus Block
+							chunk.setBlockState(pos, susState, 0);
+
+							// Set Block Entity
+							BlockEntity existing = chunk.getBlockEntity(pos);
+							if (existing != null)
+								chunk.removeBlockEntity(pos);
+
+							BrushableBlockEntity be = new BrushableBlockEntity(pos, susState);
+							be.setLootTable(storyLoot, pos.asLong());
+
+							if (be.getType().supports(susState)) {
+								chunk.setBlockEntity(be);
+							}
+
+							// Clean above
+							if (yBlock + 1 < topY) {
+								chunk.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 0);
+							}
+							continue; // Skip hole/snow
+						}
+
+						// 2. Hole Logic (Increased to 6%)
+						// PROTECT STORY LORE: Do not make a hole if this is the target story pos
+						boolean isStoryPos = (finalLorePos != null && pos.equals(finalLorePos));
+						if (!isStoryPos && Math.abs(hash % 100) < 6) {
+							chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), 0);
+							continue;
+						}
+
+						// 3. Snow Logic (Increased to ~87%)
+						if (isTop) {
+							RegistryEntry<Biome> biomeEntry = world.getBiome(pos);
+							if (isCold(biomeEntry)) {
+								if ((hash & 15) < 14) {
+									if (yBlock + 1 < topY) {
+										if (chunk.getBlockState(pos.up()).isAir()) {
+											chunk.setBlockState(pos.up(), Blocks.SNOW.getDefaultState(), 0);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void placeSupport(Chunk chunk, BlockPos pos, RegistryEntry<Biome> biome, int bottomY, int topY) {
+		BlockPos supportPos = pos.down();
+		if (supportPos.getY() < bottomY || supportPos.getY() >= topY)
+			return;
+
+		// Use the bridge material's slab state, but force it to TOP
+		Block bridgeMaterial = getBridgeBlockState(biome, pos.getX(), pos.getY(), pos.getZ());
+		if (bridgeMaterial != null) {
+			BlockState supportState = bridgeMaterial.getDefaultState().with(SlabBlock.TYPE, SlabType.TOP);
+			chunk.setBlockState(supportPos, supportState, 0);
+		}
+	}
+
+	private Block getBridgeBlockState(RegistryEntry<Biome> biomeEntry, int x, int y, int z) {
+		// Hole Logic REMOVED - now handled in decorateBridges
+
+		long hash = MathHelper.hashCode(x, y, z);
 		int val = Math.abs((int) (hash % 10));
 
 		// 2. Palette Selection (9 Specific Biomes)
@@ -369,114 +584,24 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 		return Blocks.STONE_BRICK_SLAB;
 	}
 
-	private boolean placeBridgePart(Chunk chunk, int x, int y, int z, boolean isTop, RegistryEntry<Biome> biomeEntry,
-			boolean isOverworld, boolean addSnow) {
-		long hash = MathHelper.hashCode(x, y, z);
-		boolean isSuspicious = isTop && isOverworld && Math.abs(hash % 100) == 3;
+	private void placeBridgeBlock(Chunk chunk, int x, int y, int z, boolean isTop, RegistryEntry<Biome> biomeEntry) {
+		Block block = getBridgeBlockState(biomeEntry, x, y, z);
+		if (block != null) {
+			BlockState state = block.getDefaultState().with(SlabBlock.TYPE, isTop ? SlabType.TOP : SlabType.BOTTOM);
 
-		if (isSuspicious) {
-			// Suspicious Block Logic - NO SNOW
-			Block susBlock = Blocks.SUSPICIOUS_GRAVEL;
-			RegistryKey<LootTable> lootTableId = LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY;
+			// Check bounds
+			if (chunk.getPos().getStartX() <= x && chunk.getPos().getEndX() >= x &&
+					chunk.getPos().getStartZ() <= z && chunk.getPos().getEndZ() >= z &&
+					y >= chunk.getBottomY() && y < (chunk.getBottomY() + chunk.getHeight())) {
 
-			if (biomeEntry.matchesKey(BiomeKeys.DESERT) || biomeEntry.matchesKey(BiomeKeys.WARM_OCEAN)) {
-				susBlock = Blocks.SUSPICIOUS_SAND;
-				lootTableId = LootTables.DESERT_WELL_ARCHAEOLOGY;
-			}
-			// Place Suspicious Block (Full Block) which aligns with Top Slab surface
-			placeBridgeBlock(chunk, x, y, z, susBlock.getDefaultState(), lootTableId);
-
-			// Place Support Slab (Top Slab at y-1) to support the Falling Block
-			Block supportBlock = getBridgeBlockState(biomeEntry, x, y, z);
-			if (supportBlock != null) {
-				placeBridgeBlock(chunk, x, y - 1, z,
-						supportBlock.getDefaultState().with(SlabBlock.TYPE, SlabType.TOP));
-			}
-
-			// Clean above (ensure no slab covers it)
-			placeBridgeBlock(chunk, x, y + 1, z, Blocks.AIR.getDefaultState());
-
-		} else {
-			// Normal Logic
-			Block block = getBridgeBlockState(biomeEntry, x, y, z);
-			if (block != null) {
-				BlockState state = block.getDefaultState().with(SlabBlock.TYPE, isTop ? SlabType.TOP : SlabType.BOTTOM);
-				placeBridgeBlock(chunk, x, y, z, state);
-			} else {
-				// No block placed, so no snow
-				return false;
+				BlockPos pos = new BlockPos(x, y, z);
+				chunk.setBlockState(pos, state, 0);
 			}
 		}
-
-		// Snow Logic (Applies to both)
-		if (addSnow && isTop) {
-			BlockPos pos = new BlockPos(x, y, z);
-			BlockState current = chunk.getBlockState(pos);
-
-			// Verify support conditions:
-			// 1. Is a Full Block (like Suspicious Sand/Gravel) -> supports snow
-			// 2. Is a Slab with TYPE=TOP -> supports snow
-			// 3. (Implicitly) Is not Air
-			boolean supportsSnow = false;
-			if (current.getBlock() == Blocks.SUSPICIOUS_SAND || current.getBlock() == Blocks.SUSPICIOUS_GRAVEL) {
-				supportsSnow = true;
-			} else if (current.contains(SlabBlock.TYPE)) {
-				if (current.get(SlabBlock.TYPE) == SlabType.TOP) {
-					supportsSnow = true;
-				}
-			} else if (!current.isAir()) {
-				// Assume other solid blocks (full blocks) support snow
-				supportsSnow = true;
-			}
-
-			if (supportsSnow) {
-				placeSnowBlock(chunk, x, y + 1, z, Blocks.SNOW.getDefaultState());
-			}
-		}
-		return true;
 	}
 
 	private boolean isCold(RegistryEntry<Biome> biomeEntry) {
 		return biomeEntry.value().getTemperature() < 0.15f;
-	}
-
-	private void placeBridgeBlock(Chunk chunk, int x, int y, int z, BlockState state) {
-		placeBridgeBlock(chunk, x, y, z, state, null);
-	}
-
-	private void placeBridgeBlock(Chunk chunk, int x, int y, int z, BlockState state,
-			RegistryKey<LootTable> lootTableId) {
-		if (chunk.getPos().getStartX() <= x && chunk.getPos().getEndX() >= x && chunk.getPos().getStartZ() <= z
-				&& chunk.getPos().getEndZ() >= z && y >= chunk.getBottomY()
-				&& y < (chunk.getBottomY() + chunk.getHeight())) {
-
-			BlockPos pos = new BlockPos(x, y, z);
-			chunk.setBlockState(pos, state, 0);
-
-			if (lootTableId != null) {
-				BlockEntity blockEntity = chunk.getBlockEntity(pos);
-				if (blockEntity == null) {
-					blockEntity = new BrushableBlockEntity(pos, state);
-					chunk.setBlockEntity(blockEntity);
-				}
-				if (blockEntity instanceof BrushableBlockEntity brushableBlockEntity) {
-					brushableBlockEntity.setLootTable(lootTableId, pos.asLong());
-				}
-			}
-		}
-	}
-
-	private void placeSnowBlock(Chunk chunk, int x, int y, int z, BlockState state) {
-		if (chunk.getPos().getStartX() <= x && chunk.getPos().getEndX() >= x &&
-				chunk.getPos().getStartZ() <= z && chunk.getPos().getEndZ() >= z &&
-				y >= chunk.getBottomY() && y < (chunk.getBottomY() + chunk.getHeight())) {
-
-			BlockPos pos = new BlockPos(x, y, z);
-			// Only place snow if air
-			if (chunk.getBlockState(pos).isAir()) {
-				chunk.setBlockState(pos, state, 0);
-			}
-		}
 	}
 
 	private double solveCatenaryShift(double d, double dy, double A) {
@@ -639,6 +764,11 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 				sphere.decorate(world, chunkPos.getStartPos(), random);
 			}
 		}
+
+		// 3. Decorate Bridges (Holes, Lore, Snow)
+		// This runs after all structures (spheres) are placed, ensuring we only modify
+		// valid bridge slabs.
+		decorateBridges(world, chunk);
 	}
 
 	@Override

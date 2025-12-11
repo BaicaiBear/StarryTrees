@@ -63,7 +63,9 @@ public class BlueprintGenerator {
         int[] biomes = assignBiomes(points, result.heights, result.validIds, seed, isNether);
 
         // 5. Sphere Assignment & Bridges
-        return createBlueprints(points, result.heights, biomes, result.validIds, result.edges, isNether, random);
+        // 5. Sphere Assignment & Bridges
+        return createBlueprints(points, result.heights, biomes, result.validIds, result.edges, result.story, isNether,
+                random);
     }
 
     private static List<MathUtils.Point> poissonSampling(double radius, double minDist, int n, ChunkRandom random) {
@@ -176,6 +178,7 @@ public class BlueprintGenerator {
         List<int[]> edges = new ArrayList<>();
         Set<Integer> validIds = new HashSet<>();
         Map<Integer, Double> localHeights = new HashMap<>(); // ID -> Height
+        Map<String, int[]> story = new HashMap<>(); // EdgeKey -> [chapter, part]
     }
 
     private static PartitionResult partitionAndGenerate(List<MathUtils.Point> points,
@@ -324,7 +327,13 @@ public class BlueprintGenerator {
             }
         }
 
-        return new PartitionResult(allValidIds, allEdges, heights);
+        // Merge Story Data from all clusters
+        Map<String, int[]> allStory = new HashMap<>();
+        for (ClusterResult res : results) {
+            allStory.putAll(res.story);
+        }
+
+        return new PartitionResult(allValidIds, allEdges, heights, allStory);
     }
 
     private static ClusterResult generateCluster(int clusterId, List<Integer> clusterPoints,
@@ -348,6 +357,19 @@ public class BlueprintGenerator {
 
         if (root == -1)
             return null; // Should not happen
+
+        // ... (Existing implementation of MST) ...
+        // Wait, I need to make sure I don't overwrite the MST logic which is between
+        // lines 350+ and the return.
+        // But I can't see those lines in the view. I should view them or assume I can
+        // append logic before return.
+        // I'll search for 'return res;' inside generateCluster to anchor my insertion.
+
+        // Better: I will view generateCluster content fully first to avoid blind
+        // editing.
+        // ABORTING EDIT to view file locally first.
+        // Wait, I can chain tool calls. I'll continue logic after viewing.
+        // Actually, let's update PartitionResult first.
 
         // Local Prim's Algorithm
         // Restrict edges to only those connecting two points BOTH inside this cluster
@@ -421,6 +443,30 @@ public class BlueprintGenerator {
             }
         }
 
+        // Story Assignment
+        List<int[]> validEdges = new ArrayList<>(res.edges);
+        // Shuffle using a standard Random seeded from our local random
+        java.util.Collections.shuffle(validEdges, new java.util.Random(random.nextLong()));
+
+        int targetItems = 20; // 10 parts * 2 copies
+        for (int i = 0; i < Math.min(validEdges.size(), targetItems); i++) {
+            int[] e = validEdges.get(i);
+            int u = e[0];
+            int v = e[1];
+
+            int x1 = (int) allPoints.get(u).x();
+            int z1 = (int) allPoints.get(u).z();
+            int y1 = res.localHeights.get(u).intValue();
+
+            int x2 = (int) allPoints.get(v).x();
+            int z2 = (int) allPoints.get(v).z();
+            int y2 = res.localHeights.get(v).intValue();
+
+            String key = BlueprintManager.getEdgeKey(x1, y1, z1, x2, y2, z2);
+            int part = i / 2;
+            res.story.put(key, new int[] { clusterId, part });
+        }
+
         return res;
     }
 
@@ -428,11 +474,13 @@ public class BlueprintGenerator {
         Set<Integer> validIds;
         List<int[]> edges;
         double[] heights;
+        Map<String, int[]> story;
 
-        public PartitionResult(Set<Integer> v, List<int[]> e, double[] h) {
+        public PartitionResult(Set<Integer> v, List<int[]> e, double[] h, Map<String, int[]> s) {
             this.validIds = v;
             this.edges = e;
             this.heights = h;
+            this.story = s;
         }
     }
 
@@ -517,30 +565,30 @@ public class BlueprintGenerator {
                     }
                 }
                 biomeIndices[i] = bestBiome;
+
             }
         }
         return biomeIndices;
     }
 
     private static GenerationResult createBlueprints(List<MathUtils.Point> points, double[] heights, int[] biomeIndices,
-            Set<Integer> validIds, List<int[]> edges, boolean isNether, ChunkRandom random) {
+            Set<Integer> validIds, List<int[]> edges, Map<String, int[]> story, boolean isNether, ChunkRandom random) {
         BlueprintManager.BlueprintData bpData = new BlueprintManager.BlueprintData();
         bpData.metadata = new BlueprintManager.Metadata();
         bpData.metadata.num_nodes = validIds.size();
-        bpData.metadata.radius_map = isNether ? NETHER_RADIUS : OVERWORLD_RADIUS; // Assuming these constants are
-                                                                                  // defined elsewhere
+        bpData.metadata.radius_map = isNether ? NETHER_RADIUS : OVERWORLD_RADIUS;
         bpData.nodes = new ArrayList<>();
 
         BlueprintManager.BridgeData bridgeData = new BlueprintManager.BridgeData();
         bridgeData.edges = new ArrayList<>();
 
-        List<BiomeDef> biomes = isNether ? NETHER_BIOMES : OVERWORLD_BIOMES;
+        List<BiomeDef> biomeDefs = isNether ? NETHER_BIOMES : OVERWORLD_BIOMES;
 
         // Node Map
         Map<Integer, int[]> nodePosMap = new HashMap<>();
 
         for (int i : validIds) {
-            BiomeDef b = biomes.get(biomeIndices[i]);
+            BiomeDef b = biomeDefs.get(biomeIndices[i]);
 
             // Pick Sphere Type
             // Weighted random choice
@@ -600,6 +648,11 @@ public class BlueprintGenerator {
                 bridge.add(pt2);
                 bridgeData.edges.add(bridge);
             }
+        }
+
+        // Apply Story Data
+        if (bridgeData != null && story != null) {
+            bridgeData.story = story;
         }
 
         return new GenerationResult(bpData, bridgeData);
@@ -792,9 +845,4 @@ public class BlueprintGenerator {
     public record GenerationResult(BlueprintManager.BlueprintData blueprint, BlueprintManager.BridgeData bridges) {
     }
 
-    private record RiverResult(Map<Integer, Integer> roots, int[] treeIds, Set<Integer> removed) {
-    }
-
-    private record ForestResult(List<int[]> edges, Map<Integer, Integer> parent, Set<Integer> validIds) {
-    }
 }

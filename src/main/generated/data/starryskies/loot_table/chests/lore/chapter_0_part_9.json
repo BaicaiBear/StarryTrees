@@ -1,0 +1,32 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "minecraft:written_book_content": {
+                  "author": "BaicaiBear",
+                  "pages": [
+                    {
+                      "text": "And so the age of the Skywalkers began."
+                    },
+                    {
+                      "text": "Little did they know, the shadow was stirring."
+                    }
+                  ],
+                  "title": "Ch 1: The Awakening"
+                }
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "minecraft:written_book"
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

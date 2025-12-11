@@ -1,0 +1,32 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "minecraft:written_book_content": {
+                  "author": "BaicaiBear",
+                  "pages": [
+                    {
+                      "text": "Battle raged in the canopy."
+                    },
+                    {
+                      "text": "Stars shivered at the clash of wills."
+                    }
+                  ],
+                  "title": "Ch 1: The Awakening"
+                }
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "minecraft:written_book"
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

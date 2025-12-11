@@ -171,6 +171,13 @@ public class BlueprintManager {
             if (edge.size() < 2)
                 continue;
 
+            // Story
+            if (data.story != null) {
+                String key = getEdgeKey(edge.getStart()[0], edge.getStart()[1], edge.getStart()[2], edge.getEnd()[0],
+                        edge.getEnd()[1], edge.getEnd()[2]);
+                edge.story = data.story.get(key);
+            }
+
             int minX = Math.min(edge.getStart()[0], edge.getEnd()[0]);
             int maxX = Math.max(edge.getStart()[0], edge.getEnd()[0]);
             int minZ = Math.min(edge.getStart()[2], edge.getEnd()[2]);
@@ -363,9 +370,11 @@ public class BlueprintManager {
 
     public static class BridgeData {
         public List<List<List<Integer>>> edges;
+        public Map<String, int[]> story; // Key: "x1_y1_z1_x2_y2_z2", Value: [chapter, part]
     }
 
     public static class Edge {
+        public int[] story;
         private final int[] start;
         private final int[] end;
         private final List<List<Integer>> raw;
@@ -386,6 +395,14 @@ public class BlueprintManager {
 
         public int size() {
             return raw == null ? 0 : raw.size();
+        }
+    }
+
+    public static String getEdgeKey(int x1, int y1, int z1, int x2, int y2, int z2) {
+        if (x1 < x2 || (x1 == x2 && (y1 < y2 || (y1 == y2 && z1 < z2)))) {
+            return x1 + "_" + y1 + "_" + z1 + "_" + x2 + "_" + y2 + "_" + z2;
+        } else {
+            return x2 + "_" + y2 + "_" + z2 + "_" + x1 + "_" + y1 + "_" + z1;
         }
     }
 }
