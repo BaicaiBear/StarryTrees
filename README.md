@@ -4,16 +4,39 @@
 
 Modified by BaicaiBear based on the original Starry Skies mod by DaFuqs.
 
-## Overview
+## World Structure Overview
 
-Starry Trees transforms Minecraft's world generation into a unique experience where players explore floating spheres connected by procedurally-generated bridges. The mod generates three custom dimensions based on Overworld, Nether, and End equivalents, but with a completely different structure.
+Starry Trees generates a fundamentally different world structure from vanilla Minecraft. The world consists of floating spherical planetoids connected by wooden bridges, forming a navigable network in the void.
 
-### What Makes This Special?
+### The Graph Structure
 
-- **Blueprint-Based Generation**: Unlike typical Minecraft world generation, spheres and bridges are pre-generated using sophisticated algorithms (Poisson disk sampling, Delaunay triangulation, and MST-based connectivity) and stored as blueprints per world
-- **Tree-Like Structure**: Spheres are organized into tree clusters, with bridges connecting them to form navigable paths
-- **Story System**: Special story blocks are placed along bridges, containing lore that unfolds as players explore
-- **315+ Sphere Types**: From simple stone spheres to complex structures with dungeons, ores, and biome-specific content
+The world is generated as a **pre-computed graph structure** stored in blueprint files (`<world>/starrytrees/`):
+
+**Overworld Dimension ("Starry Sky")**:
+- **50,000 spheres** distributed across a circular area of **20km diameter** (10km radius)
+- Organized into **10 tree clusters** (forests), each with its own root node
+- Spheres spaced **minimum 30 blocks apart**
+- Each cluster forms a **Minimum Spanning Tree (MST)** ensuring all spheres are reachable
+- **Voronoi-partitioned boundaries** with domain warping create organic, river-like gaps between clusters
+- **Biome distribution**: 9 vanilla biomes (warm_ocean, forest, deep_frozen_ocean, swamp, snowy_taiga, lush_caves, desert, stony_peaks, frozen_peaks) assigned via Simplex noise per sphere
+- Heights range from **-64 to 320 blocks** based on biome (e.g., stony_peaks: 250-320, lush_caves: -64 to 40)
+
+**Nether Dimension ("Scary Sky")**:
+- **10,000 spheres** across a **5km diameter** area (2.5km radius)
+- Organized into **1 single tree** structure (single cluster)
+- Spheres spaced **minimum 40 blocks apart**
+- **Biome distribution**: 5 nether biomes (basalt_deltas, crimson_forest, nether_wastes, soul_sand_valley, warped_forest) assigned via noise
+
+**Bridge Network**:
+- Bridges follow MST edges connecting parent-child spheres in each tree
+- Each bridge edge is assigned a **story chapter and part** based on its position in the tree
+- Story blocks (brushable suspicious blocks) are placed at intervals along bridges
+- Bridges gradually transition height between spheres
+
+**Sphere Types**:
+- **315+ sphere configurations** organized into categories: essential (stone, dirt), wood, ores, fluids, decorative, dungeons, treasures
+- Each sphere has a type (e.g., "overworld/wood/oak_wood"), size (8-15 blocks typical), and biome-specific decorators
+- Sphere type selection weighted by biome and generation groups
 
 ## Quick Start for Developers
 
