@@ -57,16 +57,4 @@ public abstract class ServerLevelMixin {
 		}
 	}
 
-	@ModifyVariable(at = @At("TAIL"), method = "<init>", argsOnly = true)
-	public List<CustomSpawner> starryskies$spawners(List<CustomSpawner> original) {
-		if(!this.getLevel().dimension().identifier().equals(Identifier.fromNamespaceAndPath(StarrySkies.MOD_ID, "overworld"))) {
-			return original;
-		}
-
-		List<CustomSpawner> s = new ArrayList<>(original);
-		s.add(new PhantomSpawner());
-		s.add(new WanderingTraderSpawner(this.getServer().getDataStorage()));
-		return s;
-	}
-
 }

@@ -3,27 +3,22 @@
   "id": "starry_skies",
   "version": "${version}",
 
-  "name": "Starry Skies",
-  "description": "An implementation of the planetoids world gen for fabric",
+  "name": "Starry Trees",
+  "description": "A tree-shaped planetoids world generator based on Starry Skies",
   "authors": [
-    "DaFuqs"
+    "DaFuqs",
+    "BaicaiBear"
   ],
   "contact": {
-    "homepage": "https://github.com/DaFuqs/StarrySkies",
-    "sources": "https://github.com/DaFuqs/StarrySkies"
+    "homepage": "https://github.com/BaicaiBear/StarryTrees",
+    "sources": "https://github.com/BaicaiBear/StarryTrees"
   },
-  "license": "MIT",
+  "license": "LGPL-3.0-only",
   "icon": "assets/starry_skies/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
       "de.dafuqs.starryskies.StarrySkies"
-    ],
-    "client": [
-      "de.dafuqs.starryskies.client.StarrySkiesClient"
-    ],
-    "modmenu": [
-      "de.dafuqs.starryskies.client.ModMenuConfig"
     ]
   },
   "mixins": [

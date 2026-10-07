@@ -40,6 +40,7 @@ public class CenterPondDecorator extends SphereDecorator<CenterPondDecoratorConf
 				for (int y = -pondRadius; y < 1; y++) {
 					for (int z = -pondRadius - 1; z <= pondRadius; z++) {
 						BlockPos currentBlockPos = sphereTop.offset(x, y, z);
+						if (!inFeatureRegion(origin, currentBlockPos)) continue;
 						if (world.getBlockState(currentBlockPos).isAir()) {
 							waterLevelY = currentBlockPos.getY() - 1;
 							waterLevelSet = true;
@@ -69,6 +70,7 @@ public class CenterPondDecorator extends SphereDecorator<CenterPondDecoratorConf
 				for (int y = -pondRadius; y < pondRadius; y++) {
 					for (int z = -pond15; z <= pond15; z++) {
 						BlockPos currentBlockPos = sphereTop.offset(x, y, z);
+						if (!inFeatureRegion(origin, currentBlockPos)) continue;
 
 						BlockState blockState = null;
 						if (currentBlockPos.getY() > waterLevelY) {

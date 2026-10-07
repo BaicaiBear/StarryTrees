@@ -28,6 +28,12 @@ public abstract class SphereDecorator<FC extends SphereDecoratorConfig> {
 
 	public abstract boolean generate(SphereFeatureContext<FC> context);
 
+	/** The FEATURES step may read and write only one chunk beyond its center. */
+	protected boolean inFeatureRegion(ChunkPos origin, BlockPos pos) {
+		return Math.abs(Math.floorDiv(pos.getX(), 16) - origin.x()) <= 1
+				&& Math.abs(Math.floorDiv(pos.getZ(), 16) - origin.z()) <= 1;
+	}
+
 	public boolean generateIfValid(FC config, WorldGenLevel world, RandomSource random, BlockPos pos, PlacedSphere<?> sphere) {
 		return world.ensureCanWrite(pos) && this.generate(new SphereFeatureContext<>(world, random, ChunkPos.containing(pos), sphere, config));
 	}

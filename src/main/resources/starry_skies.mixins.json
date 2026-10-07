@@ -3,14 +3,7 @@
   "package": "de.dafuqs.starryskies.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "BaseFireBlockMixin",
-    "EndPortalBlockMixin",
-    "NetherPortalBlockMixin",
-    "ServerLevelMixin",
-    "WindChargeMixin"
-  ],
-  "client": [
-    "LevelRendererMixin"
+    "ServerLevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

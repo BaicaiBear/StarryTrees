@@ -40,7 +40,9 @@ public class RuinedPortalDecorator extends SphereDecorator<RuinedPortalDecorator
 			for (int z = -sphere.getRadius(); z <= sphere.getRadius(); z++) {
 
 				int startY = spherePosition.getY() + sphere.getRadius() + 1;
-				int upperY = Support.getLowerGroundBlock(world, new BlockPos(spherePosition.getX() + x, startY, spherePosition.getZ() + z), spherePosition.getY());
+				BlockPos searchPos = new BlockPos(spherePosition.getX() + x, startY, spherePosition.getZ() + z);
+				if (!inFeatureRegion(origin, searchPos)) continue;
+				int upperY = Support.getLowerGroundBlock(world, searchPos, spherePosition.getY());
 
 				if (upperY > spherePosition.getY()) {
 					int randomI = random.nextInt(sphere.getRadius() + 1);
@@ -89,7 +91,9 @@ public class RuinedPortalDecorator extends SphereDecorator<RuinedPortalDecorator
 		// place loot chest
 		int randomX = Support.getRandomBetween(random, spherePosition.getX() - sphere.getRadius() / 2, spherePosition.getX() + sphere.getRadius() / 2);
 		int randomZ = Support.getRandomBetween(random, spherePosition.getZ() - sphere.getRadius() / 2, spherePosition.getZ() + sphere.getRadius() / 2);
-		centerTopBlockY = Support.getLowerGroundBlock(world, new BlockPos(randomX, spherePosition.getY() + sphere.getRadius() + 2, randomZ), spherePosition.getY());
+		BlockPos chestSearch = new BlockPos(randomX, spherePosition.getY() + sphere.getRadius() + 2, randomZ);
+		if (!inFeatureRegion(origin, chestSearch)) return true;
+		centerTopBlockY = Support.getLowerGroundBlock(world, chestSearch, spherePosition.getY());
 
 		if (centerTopBlockY != spherePosition.getY()) {
 			BlockPos lootChestPosition = new BlockPos(randomX, centerTopBlockY, randomZ).above();

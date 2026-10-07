@@ -1,64 +1,47 @@
 package de.dafuqs.starryskies.commands;
 
-import com.google.common.base.*;
-import com.mojang.brigadier.*;
-import com.mojang.brigadier.exceptions.*;
-import com.mojang.datafixers.util.Pair;
-import de.dafuqs.starryskies.*;
-import de.dafuqs.starryskies.registries.*;
-import de.dafuqs.starryskies.worldgen.*;
-import net.minecraft.util.Util;
-import net.minecraft.commands.*;
-import net.minecraft.commands.arguments.ResourceOrTagArgument;
-import net.minecraft.core.*;
+import com.mojang.brigadier.CommandDispatcher;
+import de.dafuqs.starryskies.StarrySkies;
+import de.dafuqs.starryskies.Support;
+import de.dafuqs.starryskies.worldgen.BlueprintManager;
+import de.dafuqs.starryskies.worldgen.dimension.BlueprintChunkGenerator;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.commands.LocateCommand;
-import net.minecraft.server.permissions.*;
-
-import java.util.Optional;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
 
 public class ClosestSphereCommand {
-	
-	private static final DynamicCommandExceptionType SPHERE_NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType((id) ->
-			Component.translatableEscape("commands.starry_skies.locate.sphere.not_found", id));
-	
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess) {
-		dispatcher.register(Commands.literal("starryskies_locate")
-				.requires((source) -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.byId(StarrySkies.CONFIG.locateSphereCommandRequiredPermissionLevel))))
-				.executes((context -> execute(context.getSource())))
-				.then(Commands.argument("sphere", ResourceOrTagArgument.resourceOrTag(registryAccess, StarryRegistryKeys.CONFIGURED_SPHERE))
-						.executes(context -> execute(context.getSource(), ResourceOrTagArgument.getResourceOrTag(context, "sphere", StarryRegistryKeys.CONFIGURED_SPHERE)))));
-	}
-	
-	private static int execute(CommandSourceStack source) {
-		BlockPos pos = BlockPos.containing(source.getPosition());
-		Optional<Support.SphereDistance> result;
-		
-		result = Support.getClosestSphere(source.getLevel(), pos);
-		
-		if (result.isPresent()) {
-			source.sendSuccess(() -> Component.translatable(result.get().sphere.getDescription(source.registryAccess())), false);
-			return 0;
-		}
-		
-		source.sendSuccess(() -> Component.translatable("commands.starry_skies.locate.sphere.noop"), false);
-		return 1;
-	}
-	
-	private static int execute(CommandSourceStack source, ResourceOrTagArgument.Result<ConfiguredSphere<?, ?>> predicate) throws CommandSyntaxException {
-		BlockPos pos = BlockPos.containing(source.getPosition());
-		Optional<Pair<BlockPos, Holder<ConfiguredSphere<?, ?>>>> result;
-		
-		Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
-		result = Support.getClosestSphere3x3(source.getLevel(), pos, predicate, source.registryAccess());
-		stopwatch.stop();
-		
-		if (result.isPresent()) {
-			return LocateCommand.showLocateResult(source, predicate, pos, result.get(), "commands.starry_skies.locate.sphere.success", true, stopwatch.elapsed());
-		}
-		
-		throw SPHERE_NOT_FOUND_EXCEPTION.create(predicate.asPrintable());
-	}
-	
-	
+
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess) {
+        dispatcher.register(Commands.literal("starryskies_locate")
+                .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(
+                        PermissionLevel.byId(StarrySkies.CONFIG.locateSphereCommandRequiredPermissionLevel))))
+                .executes(context -> execute(context.getSource())));
+    }
+
+    private static int execute(CommandSourceStack source) {
+        BlockPos pos = BlockPos.containing(source.getPosition());
+        if (source.getLevel().getChunkSource().getGenerator() instanceof BlueprintChunkGenerator generator) {
+            BlueprintManager.BlueprintNode node = BlueprintManager.get().getNearestNode(
+                    generator.getBlueprintId(), pos.getX(), pos.getY(), pos.getZ());
+            if (node != null) {
+                source.sendSuccess(() -> Component.literal("Nearest sphere: " + node.type + " at "
+                        + node.getX() + " " + node.getY() + " " + node.getZ()), false);
+                return 1;
+            }
+        } else {
+            var nearest = Support.getClosestSphere(source.getLevel(), pos);
+            if (nearest.isPresent() && nearest.get().sphere != null) {
+                var sphere = nearest.get().sphere;
+                source.sendSuccess(() -> Component.literal("Nearest sphere: " + sphere.getID(source.registryAccess())
+                        + " at " + sphere.getPosition().toShortString()), false);
+                return 1;
+            }
+        }
+        source.sendFailure(Component.literal("No sphere found."));
+        return 0;
+    }
 }

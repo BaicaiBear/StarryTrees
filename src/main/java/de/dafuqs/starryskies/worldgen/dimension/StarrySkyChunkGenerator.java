@@ -95,6 +95,22 @@ public class StarrySkyChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
+	public void applyBiomeDecoration(WorldGenLevel world, ChunkAccess chunk, StructureManager structureAccessor) {
+		// Keep vanilla End features, including obsidian spikes and the entry platform.
+		super.applyBiomeDecoration(world, chunk, structureAccessor);
+		ChunkPos chunkPos = chunk.getPos();
+		WorldgenRandom random = new WorldgenRandom(new LegacyRandomSource(world.getSeed()));
+		random.setDecorationSeed(world.getSeed(), chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
+		// The old custom End biome supplied sphere_decoration. The vanilla biome
+		// does not, so apply the sphere's decorators here on the server instead.
+		for (PlacedSphere<?> sphere : systemGenerator.value().getSystem(world, world.getSeed(), chunkPos.x(), chunkPos.z())) {
+			if (sphere.isInChunk(chunkPos)) {
+				sphere.decorate(world, chunkPos.getWorldPosition(), random);
+			}
+		}
+	}
+
+	@Override
 	public int getSeaLevel() {
 		return systemGenerator.value().getFloorHeight();
 	}

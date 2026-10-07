@@ -1,6 +1,5 @@
 package de.dafuqs.starryskies;
 
-import de.dafuqs.starryskies.advancements.*;
 import de.dafuqs.starryskies.commands.*;
 import de.dafuqs.starryskies.configs.*;
 import de.dafuqs.starryskies.data_loaders.*;
@@ -38,7 +37,7 @@ public class StarrySkies implements ModInitializer {
 
 	public static boolean isStarryWorld(ServerLevel world) {
 		ChunkGenerator chunkGenerator = world.getChunkSource().getGenerator();
-		return chunkGenerator instanceof StarrySkyChunkGenerator;
+		return chunkGenerator instanceof StarrySkyChunkGenerator || chunkGenerator instanceof BlueprintChunkGenerator;
 	}
 
 	@Override
@@ -53,26 +52,23 @@ public class StarrySkies implements ModInitializer {
 		
 		// Register all the stuff
 		Registry.register(BuiltInRegistries.CHUNK_GENERATOR, StarrySkies.id("starry_skies"), StarrySkyChunkGenerator.CODEC);
+		Registry.register(BuiltInRegistries.CHUNK_GENERATOR, StarrySkies.id("blueprint"), BlueprintChunkGenerator.CODEC);
 		
 		StarryRegistries.register();
 		StarryStateProviders.register();
 		Spheres.initialize();
-		StarryBlocks.register();
 		StarryFeatures.initialize();
 		SphereDecorators.initialize();
-		StarryAdvancementCriteria.register();
-		StarryPoiTypes.register();
 
-		ArgumentTypeInfos.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE, "starry_skies_configured_sphere", ConfiguredSphereArgumentType.class, SingletonArgumentInfo.contextAware(ConfiguredSphereArgumentType::configuredSphere));
 		CommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess, registrationEnvironment) -> {
 			ClosestSphereCommand.register(commandDispatcher, commandRegistryAccess);
 			GenerateSphereCommand.register(commandDispatcher, commandRegistryAccess);
 			SystemStatisticsCommand.register(commandDispatcher, commandRegistryAccess);
 		});
-		ServerTickEvents.END_SERVER_TICK.register(new ProximityAdvancementCheckEvent());
 
 		// Build a final map of sphere generation data for each chunk generator
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+			BlueprintManager.get().initialize(server);
 			Registry<GenerationGroup> generationGroupRegistry = server.registryAccess().lookupOrThrow(StarryRegistryKeys.GENERATION_GROUP);
 			Registry<SystemGenerator> systemGeneratorRegistry = server.registryAccess().lookupOrThrow(StarryRegistryKeys.SYSTEM_GENERATOR);
 			Registry<ConfiguredSphere<?, ?>> configuredSphereRegistry = server.registryAccess().lookupOrThrow(StarryRegistryKeys.CONFIGURED_SPHERE);
@@ -101,6 +97,7 @@ public class StarrySkies implements ModInitializer {
 				}
 			}
 		});
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> BlueprintManager.get().close());
 
 		LOGGER.info("Finished loading.");
 	}

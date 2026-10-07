@@ -1,7 +1,6 @@
 package de.dafuqs.starryskies.worldgen.decorators;
 
 import com.mojang.serialization.*;
-import de.dafuqs.starryskies.registries.*;
 import de.dafuqs.starryskies.worldgen.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
@@ -26,7 +25,7 @@ public class EndGatewayDecorator extends SphereDecorator<SphereDecoratorConfig.D
 			return false;
 		}
 		
-		BlockPos exitBlockPos = StarryDimensionKeys.STARRY_END_SPAWN_BLOCK_POS;
+		BlockPos exitBlockPos = new BlockPos(10, 64, 0);
 		BlockPos portalBlockPos = sphere.getPosition();
 
 		for (BlockPos blockPos2 : BlockPos.betweenClosed(portalBlockPos.offset(-1, -2, -1), portalBlockPos.offset(1, 2, 1))) {

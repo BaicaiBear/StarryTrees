@@ -23,7 +23,6 @@ dependencies {
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 	api("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") { exclude(group: "net.fabricmc.fabric-api") }
-	api("com.terraformersmc:modmenu:${project.modmenu_version}")
 }
 
 processResources {
@@ -47,6 +46,22 @@ java {
 	withSourcesJar()
 	sourceCompatibility = JavaVersion.VERSION_25
 	targetCompatibility = JavaVersion.VERSION_25
+}
+
+tasks.register('compileInfiniteAudit', JavaCompile) {
+	source = fileTree('tools/java') { include '**/*.java' }
+	classpath = sourceSets.main.runtimeClasspath
+	destinationDirectory = layout.buildDirectory.dir('classes/infinite-audit')
+	dependsOn tasks.classes
+}
+
+tasks.register('auditInfiniteRegions', JavaExec) {
+	group = 'verification'
+	description = 'Stress checks deterministic infinite macro region generation without creating chunks.'
+	dependsOn tasks.compileInfiniteAudit
+	classpath = files(layout.buildDirectory.dir('classes/infinite-audit')) + sourceSets.main.runtimeClasspath
+	mainClass = 'de.dafuqs.starryskies.worldgen.InfiniteRegionAudit'
+	args(project.findProperty('auditCount') ?: '1000')
 }
 
 jar {

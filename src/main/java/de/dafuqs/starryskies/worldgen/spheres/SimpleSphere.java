@@ -79,7 +79,8 @@ public class SimpleSphere extends Sphere<SimpleSphere.Config> {
 			
 			BlockPos.MutableBlockPos currBlockPos = new BlockPos.MutableBlockPos();
 			for (int x2 = Math.max(chunkX * 16, x - ceiledRadius); x2 <= maxX; x2++) {
-				for (int y2 = y - ceiledRadius; y2 <= y + ceiledRadius; y2++) {
+			for (int y2 = Math.max(chunk.getMinY(), y - ceiledRadius);
+					y2 <= Math.min(chunk.getMaxY() - 1, y + ceiledRadius); y2++) {
 					for (int z2 = Math.max(chunkZ * 16, z - ceiledRadius); z2 <= maxZ; z2++) {
 						long d = Math.round(Support.getDistance(x, y, z, x2, y2, z2));
 						if (d > this.radius) {

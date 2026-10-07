@@ -1,0 +1,4088 @@
+{
+  "plains": {
+    "profile": "P01",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/wood/oak_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:oak_slab",
+        60
+      ],
+      [
+        "minecraft:cobblestone_slab",
+        40
+      ]
+    ],
+    "sky": "#78A7FF",
+    "fog": null
+  },
+  "sunflower_plains": {
+    "profile": "P02",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/wood/oak_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/rainbow/wool",
+        "size": [
+          5,
+          16
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:oak_slab",
+        60
+      ],
+      [
+        "minecraft:bamboo_mosaic_slab",
+        40
+      ]
+    ],
+    "sky": "#91B8FF",
+    "fog": "#B5D0E8"
+  },
+  "forest": {
+    "profile": "P03",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/wood/oak_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/wood/birch_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 15
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:oak_slab",
+        60
+      ],
+      [
+        "minecraft:mossy_cobblestone_slab",
+        40
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "flower_forest": {
+    "profile": "P02",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/wood/oak_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/rainbow/wool",
+        "size": [
+          5,
+          16
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:oak_slab",
+        60
+      ],
+      [
+        "minecraft:cherry_slab",
+        40
+      ]
+    ],
+    "sky": "#91B8FF",
+    "fog": "#B5D0E8"
+  },
+  "birch_forest": {
+    "profile": "P04",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/wood/birch_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/wood/oak_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:birch_slab",
+        70
+      ],
+      [
+        "minecraft:mossy_cobblestone_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "old_growth_birch_forest": {
+    "profile": "P04",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/wood/birch_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/wood/oak_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:birch_slab",
+        70
+      ],
+      [
+        "minecraft:mossy_cobblestone_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "dark_forest": {
+    "profile": "P05",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/wood/dark_oak_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/treasure/red_mushroom",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 12
+      },
+      {
+        "id": "starry_skies:overworld/treasure/brown_mushroom",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 8
+      },
+      {
+        "id": "starry_skies:overworld/decorative/mycelium",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 15
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:dark_oak_slab",
+        70
+      ],
+      [
+        "minecraft:mossy_cobblestone_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "pale_garden": {
+    "profile": "P06",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/pale_oak_wood",
+        "size": [
+          8,
+          11
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/decorative/pale_moss",
+        "size": [
+          5,
+          9
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/mossy_cobblestone",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:pale_oak_slab",
+        75
+      ],
+      [
+        "minecraft:stone_brick_slab",
+        25
+      ]
+    ],
+    "sky": "#B9B9B9",
+    "fog": "#817770"
+  },
+  "cherry_grove": {
+    "profile": "P07",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/cherry_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/glass/pink_stained_glass",
+        "size": [
+          5,
+          10
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:cherry_slab",
+        70
+      ],
+      [
+        "minecraft:polished_diorite_slab",
+        30
+      ]
+    ],
+    "sky": "#91B8FF",
+    "fog": "#B5D0E8"
+  },
+  "taiga": {
+    "profile": "P08",
+    "category": "cold",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/podzol_ferns",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/stone_cave",
+        "size": [
+          5,
+          20
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:spruce_slab",
+        70
+      ],
+      [
+        "minecraft:cobblestone_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "old_growth_pine_taiga": {
+    "profile": "P09",
+    "category": "cold",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/decorative/podzol_ferns",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/podzol_bamboo",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/mossy_cobblestone",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 15
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:spruce_slab",
+        70
+      ],
+      [
+        "minecraft:mossy_cobblestone_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "old_growth_spruce_taiga": {
+    "profile": "P09",
+    "category": "cold",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/decorative/podzol_ferns",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/podzol_bamboo",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/mossy_cobblestone",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 15
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:spruce_slab",
+        70
+      ],
+      [
+        "minecraft:mossy_cobblestone_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "snowy_taiga": {
+    "profile": "P10",
+    "category": "cold",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice_packed_ice",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:spruce_slab",
+        70
+      ],
+      [
+        "minecraft:stone_brick_slab",
+        30
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "snowy_plains": {
+    "profile": "P11",
+    "category": "cold",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/ice_packed_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_packed_ice_blue_ice",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_brick_slab",
+        65
+      ],
+      [
+        "minecraft:spruce_slab",
+        35
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "ice_spikes": {
+    "profile": "P11",
+    "category": "cold",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/ice_packed_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_packed_ice_blue_ice",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_brick_slab",
+        65
+      ],
+      [
+        "minecraft:spruce_slab",
+        35
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "meadow": {
+    "profile": "P12",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/wood/birch_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/emerald",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:birch_slab",
+        60
+      ],
+      [
+        "minecraft:smooth_stone_slab",
+        40
+      ]
+    ],
+    "sky": "#91B8FF",
+    "fog": "#B5D0E8"
+  },
+  "grove": {
+    "profile": "P10",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice_packed_ice",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:spruce_slab",
+        65
+      ],
+      [
+        "minecraft:stone_brick_slab",
+        35
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "snowy_slopes": {
+    "profile": "P14",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice_packed_ice",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_packed_ice_blue_ice",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/emerald",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_brick_slab",
+        65
+      ],
+      [
+        "minecraft:spruce_slab",
+        35
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "frozen_peaks": {
+    "profile": "P14",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice_packed_ice",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_packed_ice_blue_ice",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/emerald",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_brick_slab",
+        60
+      ],
+      [
+        "minecraft:diorite_slab",
+        40
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "jagged_peaks": {
+    "profile": "P14",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice_packed_ice",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_packed_ice_blue_ice",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/emerald",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_brick_slab",
+        60
+      ],
+      [
+        "minecraft:diorite_slab",
+        40
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "stony_peaks": {
+    "profile": "P15",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/calcite",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/andesite",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/emerald",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/cinnabar",
+        "size": [
+          4,
+          7
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_slab",
+        65
+      ],
+      [
+        "minecraft:polished_tuff_slab",
+        35
+      ]
+    ],
+    "sky": "#8194A3",
+    "fog": "#788B8F"
+  },
+  "windswept_hills": {
+    "profile": "P13",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/andesite",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/emerald",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_slab",
+        65
+      ],
+      [
+        "minecraft:cobblestone_slab",
+        35
+      ]
+    ],
+    "sky": "#8194A3",
+    "fog": "#788B8F"
+  },
+  "windswept_gravelly_hills": {
+    "profile": "P13",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/andesite",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/emerald",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_slab",
+        65
+      ],
+      [
+        "minecraft:cobblestone_slab",
+        35
+      ]
+    ],
+    "sky": "#8194A3",
+    "fog": "#788B8F"
+  },
+  "windswept_forest": {
+    "profile": "P13",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/andesite",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/emerald",
+        "size": [
+          5,
+          6
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/spruce_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_slab",
+        50
+      ],
+      [
+        "minecraft:spruce_slab",
+        50
+      ]
+    ],
+    "sky": "#8194A3",
+    "fog": "#788B8F"
+  },
+  "desert": {
+    "profile": "P16",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/essential/red_sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/sand_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/acacia_wood",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/dungeon/husk",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 15
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:smooth_sandstone_slab",
+        70
+      ],
+      [
+        "minecraft:sandstone_slab",
+        30
+      ]
+    ],
+    "sky": "#E2CDA5",
+    "fog": "#D9C49D"
+  },
+  "badlands": {
+    "profile": "P17",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/red_sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/rainbow/terracotta",
+        "size": [
+          5,
+          16
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/ores/gold",
+        "size": [
+          5,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/cinnabar",
+        "size": [
+          4,
+          7
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/acacia_wood",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:red_sandstone_slab",
+        70
+      ],
+      [
+        "minecraft:polished_cinnabar_slab",
+        30
+      ]
+    ],
+    "sky": "#E2CDA5",
+    "fog": "#D9C49D"
+  },
+  "eroded_badlands": {
+    "profile": "P17",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/red_sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/rainbow/terracotta",
+        "size": [
+          5,
+          16
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/ores/gold",
+        "size": [
+          5,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/cinnabar",
+        "size": [
+          4,
+          7
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/acacia_wood",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:red_sandstone_slab",
+        70
+      ],
+      [
+        "minecraft:polished_cinnabar_slab",
+        30
+      ]
+    ],
+    "sky": "#E2CDA5",
+    "fog": "#D9C49D"
+  },
+  "wooded_badlands": {
+    "profile": "P17",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/red_sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/rainbow/terracotta",
+        "size": [
+          5,
+          16
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/ores/gold",
+        "size": [
+          5,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/cinnabar",
+        "size": [
+          4,
+          7
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/wood/acacia_wood",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:red_sandstone_slab",
+        55
+      ],
+      [
+        "minecraft:acacia_slab",
+        45
+      ]
+    ],
+    "sky": "#E2CDA5",
+    "fog": "#D9C49D"
+  },
+  "savanna": {
+    "profile": "P18",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/wood/acacia_wood",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/coarse_dirt",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:acacia_slab",
+        70
+      ],
+      [
+        "minecraft:smooth_sandstone_slab",
+        30
+      ]
+    ],
+    "sky": "#E2CDA5",
+    "fog": "#D9C49D"
+  },
+  "savanna_plateau": {
+    "profile": "P18",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/wood/acacia_wood",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/coarse_dirt",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:acacia_slab",
+        70
+      ],
+      [
+        "minecraft:smooth_sandstone_slab",
+        30
+      ]
+    ],
+    "sky": "#E2CDA5",
+    "fog": "#D9C49D"
+  },
+  "windswept_savanna": {
+    "profile": "P18",
+    "category": "mountain",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/wood/acacia_wood",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/coarse_dirt",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:acacia_slab",
+        50
+      ],
+      [
+        "minecraft:stone_slab",
+        50
+      ]
+    ],
+    "sky": "#E2CDA5",
+    "fog": "#D9C49D"
+  },
+  "jungle": {
+    "profile": "P19",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/jungle_wood",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/podzol_bamboo",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:jungle_slab",
+        70
+      ],
+      [
+        "minecraft:mossy_cobblestone_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "sparse_jungle": {
+    "profile": "P19",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/jungle_wood",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/podzol_bamboo",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/bee_hive",
+        "size": [
+          10,
+          16
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:jungle_slab",
+        70
+      ],
+      [
+        "minecraft:mossy_cobblestone_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "bamboo_jungle": {
+    "profile": "P20",
+    "category": "warm",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/podzol_bamboo",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/decorative/podzol_bamboo_pond",
+        "size": [
+          10,
+          15
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/wood/jungle_wood",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:bamboo_mosaic_slab",
+        70
+      ],
+      [
+        "minecraft:jungle_slab",
+        30
+      ]
+    ],
+    "sky": "#93BBDF",
+    "fog": "#8EAFA1"
+  },
+  "swamp": {
+    "profile": "P21",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_mud",
+        "size": [
+          9,
+          22
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_mud",
+        "size": [
+          9,
+          22
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/dungeon/slime",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/wood/oak_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:mossy_cobblestone_slab",
+        55
+      ],
+      [
+        "minecraft:mud_brick_slab",
+        45
+      ]
+    ],
+    "sky": "#899E9D",
+    "fog": "#667D76"
+  },
+  "mangrove_swamp": {
+    "profile": "P22",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/wood/mangrove_wood",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_mud",
+        "size": [
+          9,
+          22
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_mud",
+        "size": [
+          9,
+          22
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/essential/grass",
+        "size": [
+          5,
+          22
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/decorative/rooted_dirt",
+        "size": [
+          7,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/dungeon/slime",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:mangrove_slab",
+        60
+      ],
+      [
+        "minecraft:mud_brick_slab",
+        40
+      ]
+    ],
+    "sky": "#899E9D",
+    "fog": "#667D76"
+  },
+  "mushroom_fields": {
+    "profile": "P23",
+    "category": "temperate",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/mycelium",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/treasure/red_mushroom",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/treasure/brown_mushroom",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/coarse_dirt",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:mossy_cobblestone_slab",
+        50
+      ],
+      [
+        "minecraft:stone_brick_slab",
+        50
+      ]
+    ],
+    "sky": "#899E9D",
+    "fog": "#667D76"
+  },
+  "beach": {
+    "profile": "P24",
+    "category": "shore",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/treasure/corals_stone",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:smooth_sandstone_slab",
+        70
+      ],
+      [
+        "minecraft:sandstone_slab",
+        30
+      ]
+    ],
+    "sky": "#AFC6D5",
+    "fog": "#B4C4C7"
+  },
+  "snowy_beach": {
+    "profile": "P27",
+    "category": "cold",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_ice_packed_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_brick_slab",
+        65
+      ],
+      [
+        "minecraft:smooth_sandstone_slab",
+        35
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "stony_shore": {
+    "profile": "P25",
+    "category": "shore",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/andesite",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/iron",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_slab",
+        65
+      ],
+      [
+        "minecraft:cobblestone_slab",
+        35
+      ]
+    ],
+    "sky": "#8194A3",
+    "fog": "#788B8F"
+  },
+  "river": {
+    "profile": "P26",
+    "category": "shore",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_clay",
+        "size": [
+          5,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/grass_pond",
+        "size": [
+          10,
+          18
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:cobblestone_slab",
+        50
+      ],
+      [
+        "minecraft:mud_brick_slab",
+        50
+      ]
+    ],
+    "sky": "#86AACB",
+    "fog": "#6487A6"
+  },
+  "frozen_river": {
+    "profile": "P27",
+    "category": "cold",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_ice_packed_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/snow_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/coal",
+        "size": [
+          7,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_brick_slab",
+        70
+      ],
+      [
+        "minecraft:spruce_slab",
+        30
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "warm_ocean": {
+    "profile": "P28",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/treasure/corals_stone",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/treasure/corals_glass",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/essential/sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/ocean_monument",
+        "size": [
+          25,
+          35
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        70
+      ],
+      [
+        "minecraft:dark_prismarine_slab",
+        30
+      ]
+    ],
+    "sky": "#74BDD8",
+    "fog": "#5FADC0"
+  },
+  "lukewarm_ocean": {
+    "profile": "P29",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/essential/sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/corals_stone",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/ocean_monument",
+        "size": [
+          25,
+          35
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        70
+      ],
+      [
+        "minecraft:smooth_sandstone_slab",
+        30
+      ]
+    ],
+    "sky": "#74BDD8",
+    "fog": "#5FADC0"
+  },
+  "deep_lukewarm_ocean": {
+    "profile": "P29",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/essential/sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/corals_stone",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/ocean_monument",
+        "size": [
+          25,
+          35
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        70
+      ],
+      [
+        "minecraft:smooth_sandstone_slab",
+        30
+      ]
+    ],
+    "sky": "#68839C",
+    "fog": "#4E6683"
+  },
+  "ocean": {
+    "profile": "P30",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/ocean_monument",
+        "size": [
+          25,
+          35
+        ],
+        "weight": 5
+      },
+      {
+        "id": "starry_skies:overworld/treasure/huge_dirt_cave",
+        "size": [
+          20,
+          30
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        70
+      ],
+      [
+        "minecraft:stone_brick_slab",
+        30
+      ]
+    ],
+    "sky": "#86AACB",
+    "fog": "#6487A6"
+  },
+  "deep_ocean": {
+    "profile": "P30",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/essential/sand",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/ocean_monument",
+        "size": [
+          25,
+          35
+        ],
+        "weight": 5
+      },
+      {
+        "id": "starry_skies:overworld/treasure/huge_dirt_cave",
+        "size": [
+          20,
+          30
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        70
+      ],
+      [
+        "minecraft:stone_brick_slab",
+        30
+      ]
+    ],
+    "sky": "#68839C",
+    "fog": "#4E6683"
+  },
+  "cold_ocean": {
+    "profile": "P31",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/ice_packed_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/ocean_monument",
+        "size": [
+          25,
+          35
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        60
+      ],
+      [
+        "minecraft:dark_prismarine_slab",
+        40
+      ]
+    ],
+    "sky": "#AFC6D5",
+    "fog": "#B4C4C7"
+  },
+  "deep_cold_ocean": {
+    "profile": "P31",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/ice_packed_ice",
+        "size": [
+          5,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/ocean_monument",
+        "size": [
+          25,
+          35
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        60
+      ],
+      [
+        "minecraft:dark_prismarine_slab",
+        40
+      ]
+    ],
+    "sky": "#68839C",
+    "fog": "#4E6683"
+  },
+  "frozen_ocean": {
+    "profile": "P32",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_ice_packed_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/ice_packed_ice_blue_ice",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        60
+      ],
+      [
+        "minecraft:stone_brick_slab",
+        40
+      ]
+    ],
+    "sky": "#C9DFEF",
+    "fog": "#D6E7EF"
+  },
+  "deep_frozen_ocean": {
+    "profile": "P32",
+    "category": "ocean",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/fluid/water_ice_packed_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/cold/ice_packed_ice_blue_ice",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/essential/gravel",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_ice",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/pseudo/prismarine",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:prismarine_slab",
+        60
+      ],
+      [
+        "minecraft:stone_brick_slab",
+        40
+      ]
+    ],
+    "sky": "#68839C",
+    "fog": "#4E6683"
+  },
+  "lush_caves": {
+    "profile": "P33",
+    "category": "cave",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/lush_cave",
+        "size": [
+          10,
+          24
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:overworld/wood/azalea_wood",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/rooted_dirt",
+        "size": [
+          7,
+          12
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_clay",
+        "size": [
+          5,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/amethyst_geode",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/copper",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:mossy_stone_brick_slab",
+        65
+      ],
+      [
+        "minecraft:mud_brick_slab",
+        35
+      ]
+    ],
+    "sky": "#A0C58F",
+    "fog": "#698F70"
+  },
+  "dripstone_caves": {
+    "profile": "P34",
+    "category": "cave",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/dripstone_cave",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:overworld/decorative/dripstone_water",
+        "size": [
+          5,
+          11
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/dripstone_lava",
+        "size": [
+          5,
+          11
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/ores/copper",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/stone",
+        "size": [
+          5,
+          13
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/treasure/amethyst_geode",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:stone_slab",
+        70
+      ],
+      [
+        "minecraft:tuff_slab",
+        30
+      ]
+    ],
+    "sky": "#8B8E98",
+    "fog": "#5E626D"
+  },
+  "deep_dark": {
+    "profile": "P35",
+    "category": "cave",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/treasure/sculk",
+        "size": [
+          7,
+          18
+        ],
+        "weight": 40
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/deepslate",
+        "size": [
+          5,
+          11
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/cobbled_deepslate",
+        "size": [
+          4,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:overworld/treasure/huge_dirt_cave",
+        "size": [
+          20,
+          30
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/deepslate_redstone",
+        "size": [
+          9,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:deepslate_brick_slab",
+        75
+      ],
+      [
+        "minecraft:polished_deepslate_slab",
+        25
+      ]
+    ],
+    "sky": "#8B8E98",
+    "fog": "#5E626D"
+  },
+  "sulfur_caves": {
+    "profile": "P36",
+    "category": "cave",
+    "spheres": [
+      {
+        "id": "starry_skies:overworld/decorative/plain/sulfur",
+        "size": [
+          4,
+          8
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:overworld/decorative/plain/cinnabar",
+        "size": [
+          4,
+          7
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/decorative/sulfur_pond",
+        "size": [
+          12,
+          24
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:overworld/dungeon/sulfur_cube",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 12
+      },
+      {
+        "id": "starry_skies:overworld/decorative/dripstone_cave",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:overworld/ores/copper",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 8
+      },
+      {
+        "id": "starry_skies:overworld/fluid/water_glass_mud",
+        "size": [
+          9,
+          22
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:polished_sulfur_slab",
+        50
+      ],
+      [
+        "minecraft:cinnabar_brick_slab",
+        50
+      ]
+    ],
+    "sky": "#B5A36D",
+    "fog": "#8CB831"
+  },
+  "nether_wastes": {
+    "profile": "N01",
+    "category": "nether",
+    "spheres": [
+      {
+        "id": "starry_skies:nether/essential/netherrack",
+        "size": [
+          7,
+          16
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:nether/essential/glowstone",
+        "size": [
+          5,
+          12
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:nether/ores/nether_quartz_ore",
+        "size": [
+          6,
+          15
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:nether/ores/nether_gold_ore",
+        "size": [
+          5,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:nether/fluid/lava_obsidian",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:nether/wood/crimson_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:nether_brick_slab",
+        70
+      ],
+      [
+        "minecraft:red_nether_brick_slab",
+        30
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "soul_sand_valley": {
+    "profile": "N02",
+    "category": "nether",
+    "spheres": [
+      {
+        "id": "starry_skies:nether/essential/soul_sand",
+        "size": [
+          6,
+          12
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:nether/essential/soul_soil",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:nether/essential/basalt",
+        "size": [
+          10,
+          25
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:nether/treasure/huge_cave",
+        "size": [
+          20,
+          30
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:nether/dungeon/wither_skeleton",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:nether/ores/nether_quartz_ore",
+        "size": [
+          6,
+          15
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:smooth_quartz_slab",
+        60
+      ],
+      [
+        "minecraft:polished_blackstone_slab",
+        40
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "crimson_forest": {
+    "profile": "N03",
+    "category": "nether",
+    "spheres": [
+      {
+        "id": "starry_skies:nether/essential/crimson_nylium",
+        "size": [
+          9,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:nether/wood/crimson_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:nether/dungeon/hoglin",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:nether/essential/netherrack",
+        "size": [
+          7,
+          16
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:nether/ores/nether_gold_ore",
+        "size": [
+          5,
+          10
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:nether/fluid/lava_obsidian",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:crimson_slab",
+        70
+      ],
+      [
+        "minecraft:red_nether_brick_slab",
+        30
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "warped_forest": {
+    "profile": "N04",
+    "category": "nether",
+    "spheres": [
+      {
+        "id": "starry_skies:nether/essential/warped_nylium",
+        "size": [
+          9,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:nether/wood/warped_wood",
+        "size": [
+          8,
+          15
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:nether/essential/netherrack",
+        "size": [
+          7,
+          16
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:nether/dungeon/enderman",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:nether/ores/nether_quartz_ore",
+        "size": [
+          6,
+          15
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:nether/fluid/lava_obsidian",
+        "size": [
+          10,
+          20
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:warped_slab",
+        70
+      ],
+      [
+        "minecraft:blackstone_slab",
+        30
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "basalt_deltas": {
+    "profile": "N05",
+    "category": "nether",
+    "spheres": [
+      {
+        "id": "starry_skies:nether/essential/basalt",
+        "size": [
+          10,
+          25
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:nether/essential/blackstone",
+        "size": [
+          8,
+          20
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:nether/essential/magma_block",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:nether/dungeon/magma_cube",
+        "size": [
+          6,
+          11
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:nether/fluid/lava_glass_magma",
+        "size": [
+          5,
+          20
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:polished_blackstone_brick_slab",
+        70
+      ],
+      [
+        "minecraft:blackstone_slab",
+        30
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "the_end": {
+    "profile": "E01",
+    "category": "end",
+    "spheres": [
+      {
+        "id": "starry_skies:end/essential/end_stone_large",
+        "size": [
+          10,
+          19
+        ],
+        "weight": 55
+      },
+      {
+        "id": "starry_skies:end/essential/end_stone_small",
+        "size": [
+          3,
+          6
+        ],
+        "weight": 25
+      },
+      {
+        "id": "starry_skies:end/dungeon/enderman",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 15
+      },
+      {
+        "id": "starry_skies:end/treasure/end_gateway",
+        "size": [
+          20,
+          29
+        ],
+        "weight": 5
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:end_stone_brick_slab",
+        80
+      ],
+      [
+        "minecraft:purpur_slab",
+        20
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "end_highlands": {
+    "profile": "E02",
+    "category": "end",
+    "spheres": [
+      {
+        "id": "starry_skies:end/essential/end_stone_large",
+        "size": [
+          10,
+          19
+        ],
+        "weight": 45
+      },
+      {
+        "id": "starry_skies:end/dungeon/enderman",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:end/treasure/end_city",
+        "size": [
+          20,
+          39
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:end/dungeon/shulker",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:end/treasure/huge_cave",
+        "size": [
+          20,
+          29
+        ],
+        "weight": 15
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:end_stone_brick_slab",
+        70
+      ],
+      [
+        "minecraft:purpur_slab",
+        30
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "end_midlands": {
+    "profile": "E03",
+    "category": "end",
+    "spheres": [
+      {
+        "id": "starry_skies:end/essential/end_stone_large",
+        "size": [
+          10,
+          19
+        ],
+        "weight": 35
+      },
+      {
+        "id": "starry_skies:end/essential/end_stone_small",
+        "size": [
+          3,
+          6
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:end/dungeon/enderman",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 20
+      },
+      {
+        "id": "starry_skies:end/treasure/small_cave",
+        "size": [
+          8,
+          12
+        ],
+        "weight": 15
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:end_stone_brick_slab",
+        85
+      ],
+      [
+        "minecraft:purpur_slab",
+        15
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "end_barrens": {
+    "profile": "E04",
+    "category": "end",
+    "spheres": [
+      {
+        "id": "starry_skies:end/essential/end_stone_small",
+        "size": [
+          3,
+          6
+        ],
+        "weight": 50
+      },
+      {
+        "id": "starry_skies:end/essential/end_stone_large",
+        "size": [
+          10,
+          19
+        ],
+        "weight": 30
+      },
+      {
+        "id": "starry_skies:end/dungeon/endermite",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:end/treasure/small_cave",
+        "size": [
+          8,
+          12
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:end_stone_brick_slab",
+        90
+      ],
+      [
+        "minecraft:purpur_slab",
+        10
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  },
+  "small_end_islands": {
+    "profile": "E05",
+    "category": "end",
+    "spheres": [
+      {
+        "id": "starry_skies:end/essential/end_stone_small",
+        "size": [
+          3,
+          6
+        ],
+        "weight": 70
+      },
+      {
+        "id": "starry_skies:end/decorative/purple_stained_glass",
+        "size": [
+          5,
+          8
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:end/dungeon/endermite",
+        "size": [
+          6,
+          10
+        ],
+        "weight": 10
+      },
+      {
+        "id": "starry_skies:end/treasure/small_cave",
+        "size": [
+          8,
+          12
+        ],
+        "weight": 10
+      }
+    ],
+    "bridge": [
+      [
+        "minecraft:end_stone_brick_slab",
+        100
+      ]
+    ],
+    "sky": null,
+    "fog": null
+  }
+}

@@ -1,61 +1,29 @@
-## About Starry Skies
+# Starry Trees
 
-Starry Skies is a Minecraft mod for the fabric mod loader that adds 3 dimensions with that name. It can be seen as a modern revamp of the "planetoids" world generator by Seibai for Minecraft 1.2.5 back in 2012 - although a lot more extensive and with mod support.
+Starry Trees is a server-side Fabric world generation mod for Minecraft 26.2, built from [Starry Skies](https://github.com/DaFuqs/StarrySkies). It keeps the sphere generation content and replaces the normal Overworld and Nether terrain with infinite, seeded trees of floating spheres and bridges. The End uses the Starry Skies system generator. The three extra `starry_skies:*` dimensions, custom portal block, client skybox, and sphere advancements have been removed. The server sends only vanilla blocks, biomes, and dimension IDs to clients.
 
+## World generation
 
+The Overworld and Nether are generated on demand in 512×512 and 256×256 block regions. Each region contains a local three-dimensional tree. A deterministic parent-region rule joins all regions to the origin, so each dimension has one connected tree regardless of exploration order. Boundary spheres use globally seeded cells and can extend into neighboring regions, closing the former empty band without overlap. Regions contain up to about 285 Overworld or 230 Nether spheres, with at least two blocks between sphere surfaces. Bridges sample the catenary at half-block vertical intervals and add ladders in steep columns. Complete spheres keep bridge landings near the top; pond and bee hive spheres use landings on their usable surfaces. Biome regions are about 512 blocks wide, with separate low, middle, and high altitude choices. The biome catalog contains all 55 naturally generated Overworld biomes and all five Nether biomes from Minecraft 26.2; a particular explored area need not contain all of them. Each biome has a sphere and bridge palette in `assets/starry_skies/blueprint_biomes.json`. The End continues to use the Starry Skies system generator, with a larger central island, obsidian spikes, and restored sphere structure templates.
 
-## Features
+Each region's design is saved as a compressed snapshot under the world's `starrytrees/infinite-overworld/regions/` or `infinite-nether/regions/`. Keep these files and each dimension's `manifest.json` with the save. Rule versions are checked at startup; incompatible versions require a new world. This version does not load the earlier finite blueprint format. For a fresh test server, set `level-name` in `run/server.properties` to a new name before running `./gradlew runServer`.
 
-The mod adds 3 new dimensions: The Starry Sky (Overworld equivalent), Scary Sky (Nether) and Scarcy Sky (End).
+The mod replaces Minecraft's `normal` world preset. New worlds using that preset receive Starry Trees generation in `minecraft:overworld`, `minecraft:the_nether`, and `minecraft:the_end`. Existing worlds retain the generators saved in their world data. Worlds that used the removed custom dimensions need migration before loading. Back up worlds before moving them between Minecraft versions.
 
-The Starry Skies dimensions consist out of never ending floating spheres floating in the sky. They can be filled with precious ores or dungeons. But watch out! If you're careless you could very well burn in lava.
+Starry Trees 2.0 removes the fork's story books, story loot tables, story suspicious blocks, and cartographer story maps. Ordinary Starry Skies archaeology spheres remain.
 
+## Requirements
 
-## Entering the Starry Skies dimension
+- Minecraft Java Edition 26.2
+- Fabric Loader 0.19.3 or newer
+- Fabric API, Cloth Config, and Java 25
 
-Build a **portal out of packed ice** and light it with flint & steel. [can be configured in the config].
-The other dimensions are accessed like their vanilla counterparts: Via nether and end portals, respectively.
+Install the mod and its dependencies on the server. Vanilla clients can join; the mod has no client entrypoint or synced custom sphere registries. The vanilla sky's dark lower horizon remains, especially near or below Y=0.
 
-If you want to start in the Starry Sky go ahead! The mod "GlobalSpawn" can be used to set "starry_skies:starry_skies" as your spawn dimension.
-At x:16 y:90 z:16 will always be a wooden sphere, so that will be a great starting point for your adventure.
+## Build
 
-**WARNING:** Due to how custom dimensions are currently implemented by Mojang custom dimensions are only loaded after the second server start!
+Use JDK 25 and run `./gradlew build`. The distributable JAR is written to `build/libs/`. `./gradlew auditInfiniteRegions -PauditCount=10000` stress checks the coordinate-only region generator. `python3 tools/verify_infinite_regions.py run/<world-name>/starrytrees` checks generated regions; add `--window-radius 1 --closed` to verify a connected origin window after its chunks have generated. `python3 tools/build_blueprint_biomes.py` rebuilds the biome catalog and visual overrides from the reviewed design document using the locally cached Minecraft 26.2 JAR.
 
-## Screenshots
+## Credits and license
 
-![Vanilla](./images/readme_screenshot_vanilla_lowres.png)
-
-![With mod integration](./images/readme_screenshot_modded_lowres.png)
-
-
-
-## Configuration
-
-You're able to configure how many spheres generate and how much room should be mandatory between each sphere. Also the ground: Fall safely into water, burn the inventory in lava, or fall into the void? Your choice.
-
-Each sphere pack (besides vanilla) can be enabled / disabled. There is also an optional Pride pack if you like it.
-
-
-
-## Mod Integration
-
-Vanilla spheres are not enough for you? Starry Skies adds loads of new spheres through mod integration. All mods listed here are fully playable without requiring access to the vanilla Overworld (excluding Nether and The End).
-
-- [Applied Energistics 2](https://github.com/AppliedEnergistics/Applied-Energistics-2/tree/fabric/master) integration last updated in 1.16.5
-- [Astromine](https://github.com/Mixinors/Astromine) integration last updated in 1.16.5
-- [Better End ](https://github.com/paulevsGitch/BetterEnd) integration last updated in 1.16.5
-- [Better Nether](https://github.com/paulevsGitch/BetterNether) integration last updated in 1.16.5
-- [Blockus](https://github.com/Brandcraf06/Blockus) integration last updated in 1.16.5
-- [Biomes You Go](https://github.com/CorgiTaco/BYG/tree/Fabric-1.17.X) integration last updated in 1.16.5
-- [Cinderscapes](https://github.com/TerraformersMC/Cinderscapes) integration last updated in 1.16.5
-- [Industrial Revolution](https://github.com/GabrielOlvH/Industrial-Revolution) integration last updated in 1.16.5
-- [Modern Industrialization](https://github.com/AztechMC/Modern-Industrialization) integration last updated in 1.16.5
-- [Mythic Metals](https://github.com/Noaaan/MythicMetals) integration last updated in 1.16.5
-- [Sakura Rosea](https://github.com/FaeCraft/SakuraRosea) integration last updated in 1.16.5
-- [Sandwichable](https://github.com/FoundationGames/Sandwichable) integration last updated in 1.16.5
-- [Tech Reborn](https://github.com/TechReborn/TechReborn) integration last updated in 1.16.5
-- [Terrestria](https://github.com/TerraformersMC/Terrestria) integration last updated in 1.16.5
-- [Traverse](https://github.com/TerraformersMC/Traverse) integration last updated in 1.16.5
-- [Unearthed](https://github.com/CorgiTaco/Unearthed) integration last updated in 1.16.5
-
-Starry's integration pack system is very modular. Just because an integration pack was not updated lately it does not mean it won't work anymore. Just that newly introduced blocks may not be available in Starry Skies dimensions.
+Original Starry Skies by DaFuqs. Starry Trees additions by BaicaiBear. See [LICENSE](LICENSE) for the LGPL-3.0 license text.

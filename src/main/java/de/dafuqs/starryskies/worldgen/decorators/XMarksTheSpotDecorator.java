@@ -47,7 +47,7 @@ public class XMarksTheSpotDecorator extends SphereDecorator<XMarksTheSpotDecorat
 		int amountOfXMarks = random.nextInt(2) + 1;
 		for (int i = 0; i < amountOfXMarks; i++) {
 			Direction randomDirection = Direction.values()[(r + i) % 6];
-			paintXInDirection(world, sphere, config.markingState(), randomDirection);
+			paintXInDirection(world, origin, sphere, config.markingState(), randomDirection);
 		}
 
 		return true;
@@ -56,7 +56,7 @@ public class XMarksTheSpotDecorator extends SphereDecorator<XMarksTheSpotDecorat
 	/**
 	 * Draws an "X" in a 5x5 pattern on a sphere.
 	 */
-	private void paintXInDirection(WorldGenLevel world, PlacedSphere<?> sphere, BlockState markingState, Direction direction) {
+	private void paintXInDirection(WorldGenLevel world, ChunkPos origin, PlacedSphere<?> sphere, BlockState markingState, Direction direction) {
 		int startX;
 		int startY;
 		int startZ;
@@ -105,7 +105,12 @@ public class XMarksTheSpotDecorator extends SphereDecorator<XMarksTheSpotDecorat
 						case EAST, WEST -> startBlockPos = new BlockPos(startX, startY + i, startZ + j);
 						default -> startBlockPos = new BlockPos(startX + i, startY + j, startZ);
 					}
-					BlockPos currentBlockPos = findNextNonAirBlockInDirection(world, startBlockPos, direction, sphere.getRadius());
+					BlockPos currentBlockPos = null;
+					for (int distance = 0; distance < sphere.getRadius(); distance++) {
+						BlockPos candidate = startBlockPos.relative(direction, distance);
+						if (!inFeatureRegion(origin, candidate)) continue;
+						if (!world.getBlockState(candidate).isAir()) { currentBlockPos = candidate; break; }
+					}
 					if (currentBlockPos != null) {
 						world.setBlock(currentBlockPos, markingState, Block.UPDATE_ALL);
 					}
